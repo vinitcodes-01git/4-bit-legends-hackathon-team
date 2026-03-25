@@ -11,63 +11,68 @@
 </head>
 <body>
 
-<div class="container">
+<div class="app">
 
-    <!-- LEFT PANEL -->
-    <div class="sidebar">
-        <h1>🚦 Traffic AI</h1>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h1>Smart Traffic AI</h1>
 
-        <label>Source</label>
-        <select id="source"></select>
-
-        <label>Destination</label>
-        <select id="destination"></select>
-
-        <label>Vehicle Density</label>
-        <input type="range" id="density" min="0" max="100" value="50">
-        <span id="densityValue">50%</span>
-
-        <div class="toggle">
-            <input type="checkbox" id="emergency">
-            <label>🚑 Emergency Mode</label>
+        <div class="input-group">
+            <label>Source</label>
+            <select id="source"></select>
         </div>
 
-        <button id="analyzeBtn">Analyze</button>
-    </div>
+        <div class="input-group">
+            <label>Destination</label>
+            <select id="destination"></select>
+        </div>
 
-    <!-- MAIN -->
-    <div class="main">
+        <div class="input-group">
+            <label>Vehicle Density</label>
+            <input type="range" id="density" min="0" max="100" value="50">
+            <span id="densityValue">50%</span>
+        </div>
+
+        <div class="input-group checkbox">
+            <input type="checkbox" id="emergency">
+            <label>Emergency Mode</label>
+        </div>
+
+        <button id="analyzeBtn">Analyze Traffic</button>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
 
         <div id="map"></div>
 
-        <!-- RESULT DASHBOARD -->
-        <div class="dashboard">
+        <div class="cards">
 
             <div class="card">
-                <h3>Traffic</h3>
-                <p id="traffic">-</p>
+                <span>Traffic</span>
+                <h2 id="traffic">-</h2>
             </div>
 
             <div class="card">
-                <h3>ETA</h3>
-                <p id="eta">-</p>
+                <span>ETA</span>
+                <h2 id="eta">-</h2>
             </div>
 
             <div class="card">
-                <h3>Mode</h3>
-                <p id="mode">-</p>
+                <span>Mode</span>
+                <h2 id="mode">-</h2>
             </div>
 
             <div class="card">
-                <h3>Confidence</h3>
-                <div class="bar">
+                <span>Confidence</span>
+                <div class="progress">
                     <div id="confidenceBar"></div>
                 </div>
             </div>
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
