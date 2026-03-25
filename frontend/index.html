@@ -18,13 +18,16 @@
     <!-- ================= LEFT PANEL ================= -->
     <div class="left-panel">
 
-        <!-- HEADER -->
-        <div class="panel-header">
-            <h1>🍊 Nagpur AI</h1>
-            <span class="status-dot"></span>
+        <!-- BRAND -->
+        <div class="brand">
+            <div class="brand-top">
+                <h1>🍊 Nagpur AI</h1>
+                <span class="status-dot"></span>
+            </div>
+            <p class="brand-sub">Smart Traffic Intelligence System</p>
         </div>
 
-        <!-- SECTION: ROUTING -->
+        <!-- ROUTE CONTROL -->
         <div class="section">
             <h3>Route Control</h3>
 
@@ -39,7 +42,7 @@
             </div>
         </div>
 
-        <!-- SECTION: TRAFFIC -->
+        <!-- TRAFFIC -->
         <div class="section">
             <h3>Traffic Density</h3>
 
@@ -47,25 +50,35 @@
             <div id="densityValue">50%</div>
         </div>
 
-        <!-- SECTION: EMERGENCY -->
+        <!-- EMERGENCY -->
         <div class="emergency-card">
-            <div class="emergency-top">
+
+            <div class="emergency-header">
                 <span>🚑 Emergency Override</span>
                 <input type="checkbox" id="emergency">
             </div>
 
             <p>
-                AI prioritizes fastest route, overrides signals, and reduces delay.
+                AI prioritizes fastest route, clears signals, and minimizes delay during emergency conditions.
             </p>
+
         </div>
 
-        <!-- ACTION BUTTON -->
-        <button id="analyzeBtn">⚡ Start AI Routing</button>
+        <!-- BUTTON -->
+        <button id="analyzeBtn">
+            ⚡ Start AI Routing
+        </button>
 
     </div>
 
     <!-- ================= RIGHT SIDE ================= -->
     <div class="main">
+
+        <!-- TOP BAR -->
+        <div class="top-bar">
+            <span class="live-indicator"></span>
+            <span>Live AI Traffic System</span>
+        </div>
 
         <!-- MAP -->
         <div id="map"></div>
@@ -73,6 +86,7 @@
         <!-- AI PANEL -->
         <div class="bottom-bar">
 
+            <!-- METRICS -->
             <div class="metrics-row">
 
                 <div class="metric">
@@ -99,9 +113,13 @@
 
             </div>
 
-            <!-- AI TEXT -->
-            <div class="ai-text" id="aiReason">
-                🧠 AI waiting for input...
+            <!-- AI EXPLANATION -->
+            <div class="ai-box">
+                <div class="ai-title">🧠 AI Insight</div>
+
+                <div class="ai-text" id="aiReason">
+                    Waiting for analysis...
+                </div>
             </div>
 
         </div>

@@ -5,6 +5,26 @@ body {
     background: radial-gradient(circle at top, #0f172a, #020617);
     color: white;
     overflow: hidden;
+
+    animation: fadeIn 0.8s ease;
+}
+
+/* ================= GLOBAL ANIMATIONS ================= */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 0px rgba(249,115,22,0.3); }
+    50% { box-shadow: 0 0 20px rgba(249,115,22,0.6); }
+    100% { box-shadow: 0 0 0px rgba(249,115,22,0.3); }
 }
 
 /* ================= APP ================= */
@@ -26,27 +46,30 @@ body {
     gap: 18px;
 
     box-shadow: inset -1px 0 0 rgba(255,255,255,0.05);
+
+    animation: fadeIn 0.8s ease;
 }
 
-/* HEADER */
-.panel-header {
+/* ================= BRAND ================= */
+.brand-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.panel-header h1 {
-    font-size: 20px;
-    color: #fb923c;
+.brand-sub {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
 }
 
-/* LIVE DOT */
+/* ================= LIVE DOT ================= */
 .status-dot {
     width: 8px;
     height: 8px;
     background: #22c55e;
     border-radius: 50%;
-    box-shadow: 0 0 10px #22c55e;
+    animation: pulse 1.5s infinite;
 }
 
 /* ================= SECTION ================= */
@@ -59,17 +82,9 @@ body {
 .section h3 {
     font-size: 13px;
     color: #94a3b8;
-    font-weight: 500;
 }
 
-/* INPUT GROUP */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-/* INPUTS */
+/* ================= INPUT ================= */
 select, input[type="range"] {
     padding: 12px;
     border-radius: 12px;
@@ -77,45 +92,69 @@ select, input[type="range"] {
     background: #020617;
     color: white;
     outline: none;
+
     transition: all 0.25s ease;
 }
 
+/* HOVER EFFECT */
 select:hover {
     border-color: #fb923c;
-    box-shadow: 0 0 12px rgba(249,115,22,0.2);
+    transform: scale(1.02);
 }
 
-/* SLIDER VALUE */
+/* FOCUS EFFECT */
+select:focus {
+    border-color: #fb923c;
+    box-shadow: 0 0 12px rgba(249,115,22,0.3);
+}
+
+/* SLIDER */
+input[type="range"] {
+    cursor: pointer;
+}
+
+/* VALUE */
 #densityValue {
     font-weight: 600;
     color: #fb923c;
+    transition: 0.3s;
 }
 
-/* ================= EMERGENCY CARD ================= */
+/* ================= EMERGENCY ================= */
 .emergency-card {
     padding: 14px;
     border-radius: 16px;
+
     background: linear-gradient(145deg, #0f172a, #020617);
     border: 1px solid rgba(239,68,68,0.25);
 
-    box-shadow: 0 0 20px rgba(239,68,68,0.15);
+    transition: all 0.3s ease;
 
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.emergency-top {
+/* HOVER */
+.emergency-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(239,68,68,0.3);
+}
+
+/* ACTIVE STATE (WHEN CHECKED) */
+#emergency:checked ~ .emergency-card,
+.emergency-card.active {
+    animation: glow 1.5s infinite;
+    border-color: #ef4444;
+}
+
+/* HEADER */
+.emergency-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #ef4444;
     font-weight: 600;
-}
-
-.emergency-card p {
-    font-size: 12px;
-    color: #94a3b8;
 }
 
 /* ================= BUTTON ================= */
@@ -130,26 +169,54 @@ button {
     color: white;
 
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s ease;
 }
 
+/* HOVER */
 button:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.02);
     box-shadow: 0 12px 30px rgba(249,115,22,0.4);
 }
 
-/* ================= RIGHT SIDE ================= */
+/* CLICK */
+button:active {
+    transform: scale(0.96);
+}
+
+/* ================= RIGHT ================= */
 .main {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
+/* ================= TOP BAR ================= */
+.top-bar {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+
+    background: rgba(2,6,23,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* LIVE INDICATOR */
+.live-indicator {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
 /* ================= MAP ================= */
 #map {
     height: 65vh;
     width: 100%;
-    filter: contrast(1.05) brightness(0.95);
+
+    transition: all 0.4s ease;
 }
 
 /* ================= BOTTOM BAR ================= */
@@ -165,12 +232,22 @@ button:hover {
     padding: 20px;
 
     border-top: 1px solid rgba(255,255,255,0.05);
+
+    animation: fadeIn 1s ease;
 }
 
 /* ================= METRICS ================= */
 .metrics-row {
     display: flex;
     gap: 40px;
+}
+
+.metric {
+    transition: 0.3s;
+}
+
+.metric:hover {
+    transform: translateY(-3px);
 }
 
 .metric span {
@@ -199,10 +276,22 @@ button:hover {
     width: 0%;
     background: linear-gradient(90deg,#22c55e,#4ade80);
     border-radius: 6px;
-    transition: width 0.4s ease;
+
+    transition: width 0.6s ease;
 }
 
 /* ================= AI TEXT ================= */
+.ai-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ai-title {
+    font-size: 13px;
+    color: #64748b;
+}
+
 .ai-text {
     color: #38bdf8;
     font-size: 14px;
@@ -214,7 +303,7 @@ button:hover {
 
     border: 1px solid rgba(255,255,255,0.05);
 
-    overflow-y: auto;
+    animation: fadeIn 0.6s ease;
 }
 
 /* ================= RESPONSIVE ================= */
