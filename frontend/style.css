@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    font-family: -apple-system, system-ui, sans-serif;
+    font-family: system-ui;
     background: #eef2ff;
 }
 
@@ -10,41 +10,18 @@ body {
 }
 
 .sidebar {
-    width: 320px;
-    background: linear-gradient(180deg, #1e3a8a, #2563eb);
+    width: 300px;
+    background: linear-gradient(#1e3a8a, #3b82f6);
     color: white;
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
+    padding: 20px;
 }
 
-.sidebar h1 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-.sidebar select, .sidebar button {
-    padding: 12px;
+.sidebar select, .sidebar input, .sidebar button {
+    width: 100%;
     margin: 10px 0;
+    padding: 10px;
     border-radius: 8px;
     border: none;
-    font-size: 15px;
-}
-
-.sidebar button {
-    background: white;
-    color: #1e3a8a;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.sidebar button:hover {
-    transform: scale(1.05);
-}
-
-.toggle {
-    margin: 15px 0;
 }
 
 .main {
@@ -57,9 +34,29 @@ body {
     flex: 1;
 }
 
-#results {
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     background: white;
-    padding: 20px;
-    border-top: 3px solid #2563eb;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+    padding: 15px;
+    gap: 10px;
+}
+
+.card {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.bar {
+    background: #ddd;
+    height: 10px;
+    border-radius: 5px;
+}
+
+#confidenceBar {
+    height: 10px;
+    background: green;
+    width: 0%;
 }

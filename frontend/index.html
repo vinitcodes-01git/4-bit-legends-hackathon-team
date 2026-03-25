@@ -6,16 +6,16 @@
 <title>Smart Traffic AI</title>
 
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-
 <body>
 
 <div class="container">
 
+    <!-- LEFT PANEL -->
     <div class="sidebar">
-        <h1>🚦 Smart Traffic AI</h1>
+        <h1>🚦 Traffic AI</h1>
 
         <label>Source</label>
         <select id="source"></select>
@@ -23,21 +23,50 @@
         <label>Destination</label>
         <select id="destination"></select>
 
+        <label>Vehicle Density</label>
+        <input type="range" id="density" min="0" max="100" value="50">
+        <span id="densityValue">50%</span>
+
         <div class="toggle">
             <input type="checkbox" id="emergency">
-            <label for="emergency">🚑 Emergency Mode</label>
+            <label>🚑 Emergency Mode</label>
         </div>
 
-        <button id="analyzeBtn">Analyze Traffic</button>
+        <button id="analyzeBtn">Analyze</button>
     </div>
 
+    <!-- MAIN -->
     <div class="main">
+
         <div id="map"></div>
 
-        <div id="results">
-            <h3>🧠 AI Analysis</h3>
-            <p>Select locations and analyze</p>
+        <!-- RESULT DASHBOARD -->
+        <div class="dashboard">
+
+            <div class="card">
+                <h3>Traffic</h3>
+                <p id="traffic">-</p>
+            </div>
+
+            <div class="card">
+                <h3>ETA</h3>
+                <p id="eta">-</p>
+            </div>
+
+            <div class="card">
+                <h3>Mode</h3>
+                <p id="mode">-</p>
+            </div>
+
+            <div class="card">
+                <h3>Confidence</h3>
+                <div class="bar">
+                    <div id="confidenceBar"></div>
+                </div>
+            </div>
+
         </div>
+
     </div>
 
 </div>
