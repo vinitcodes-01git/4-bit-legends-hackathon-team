@@ -1,5 +1,5 @@
 import math
-import random
+import heapq
 
 # ================= CITY GRAPH =================
 graph = {
@@ -43,74 +43,70 @@ def distance(a, b):
     bx, by = coords[b]
     return math.sqrt((ax - bx)**2 + (ay - by)**2)
 
-# ================= SMART COST FUNCTION =================
+# ================= COST FUNCTION =================
 def get_cost(a, b, density, emergency):
+
     d = distance(a, b)
 
-    # 🚗 congestion (non-linear)
-    congestion = 1 + (density / 100) ** 1.5
+    # 🚗 congestion (deterministic)
+    congestion = 1 + (density / 100) ** 1.3
 
-    # 🚦 signal penalty (simulate signals)
-    signal_penalty = random.uniform(1.0, 1.5)
+    # 🚦 signal delay based on node importance
+    signal_penalty = 1 + (len(graph[b]) * 0.1)
 
-    # 🧱 connectivity (busy nodes)
-    connectivity_penalty = len(graph[b]) * 0.15
-
-    # 🚧 accident simulation
-    accident_penalty = random.uniform(1.0, 1.3)
+    # 🚧 simulated accident zones (fixed nodes)
+    accident_nodes = ["Gandhibagh", "Sitabuldi"]
+    accident_penalty = 1.3 if b in accident_nodes and density > 60 else 1
 
     # 🚑 emergency override
-    emergency_factor = 0.5 if emergency else 1
+    emergency_factor = 0.6 if emergency else 1
 
-    return d * congestion * signal_penalty * (1 + connectivity_penalty) * accident_penalty * emergency_factor
+    return d * congestion * signal_penalty * accident_penalty * emergency_factor
 
-# ================= DIJKSTRA =================
+# ================= DIJKSTRA (FAST) =================
 def find_route(start, end, density, emergency):
+
+    pq = [(0, start)]
     distances = {node: float('inf') for node in graph}
     previous = {}
-    visited = set()
 
     distances[start] = 0
 
-    while True:
-        current = None
+    while pq:
+        current_dist, current = heapq.heappop(pq)
 
-        for node in distances:
-            if node not in visited:
-                if current is None or distances[node] < distances[current]:
-                    current = node
-
-        if current is None or current == end:
+        if current == end:
             break
 
-        visited.add(current)
-
         for neighbor in graph[current]:
-            cost = distances[current] + get_cost(current, neighbor, density, emergency)
+            cost = current_dist + get_cost(current, neighbor, density, emergency)
 
             if cost < distances[neighbor]:
                 distances[neighbor] = cost
                 previous[neighbor] = current
+                heapq.heappush(pq, (cost, neighbor))
 
     # reconstruct path
     path = []
-    curr = end
+    node = end
 
-    while curr in previous:
-        path.insert(0, curr)
-        curr = previous[curr]
+    while node in previous:
+        path.insert(0, node)
+        node = previous[node]
 
     path.insert(0, start)
 
     return path, distances[end]
 
-# ================= ALTERNATE ROUTE =================
-def generate_alternate_route(route):
-    if len(route) > 2:
-        alt = route.copy()
-        alt.insert(1, alt.pop(-2))  # small variation
-        return alt
-    return route
+# ================= ALT ROUTE (SMART) =================
+def generate_alternate_route(start, end, density):
+
+    # increase cost for busy nodes to force variation
+    modified_density = min(100, density + 25)
+
+    alt_route, _ = find_route(start, end, modified_density, False)
+
+    return alt_route
 
 # ================= TRAFFIC =================
 def classify_traffic(density):
@@ -121,37 +117,51 @@ def classify_traffic(density):
     return "Low"
 
 # ================= ETA =================
-def calculate_eta(cost, emergency):
-    eta = cost * 80
+def calculate_eta(cost, density, emergency):
+
+    base_speed = 40  # km/h equivalent scaling
+
+    eta = (cost * 100) / base_speed
+
+    if density > 70:
+        eta *= 1.4
+    elif density > 40:
+        eta *= 1.2
+
     if emergency:
         eta *= 0.7
+
     return max(5, int(eta))
 
 # ================= CONFIDENCE =================
 def calculate_confidence(density, route_len):
-    confidence = 1 - (density / 120) + (1 / (route_len + 1))
-    return round(max(0.7, min(confidence, 0.97)), 2)
+
+    confidence = 0.9 - (density / 150) + (1 / (route_len + 2))
+
+    return round(max(0.75, min(confidence, 0.97)), 2)
 
 # ================= AI REASON =================
 def generate_reason(route, traffic, emergency):
+
     reason = f"Route selected via {' → '.join(route)}. "
 
     if traffic == "High":
-        reason += "Heavy congestion detected; avoiding high-density nodes. "
+        reason += "High congestion detected; avoiding critical nodes. "
     elif traffic == "Medium":
-        reason += "Balanced path chosen considering moderate traffic. "
+        reason += "Moderate traffic; balanced routing applied. "
     else:
-        reason += "Low congestion; fastest path selected. "
+        reason += "Low traffic; fastest path chosen. "
 
     if emergency:
-        reason += "Emergency mode activated: signal delays minimized. "
+        reason += "Emergency mode enabled: priority routing applied. "
 
-    reason += "System evaluated distance, congestion, signals, and connectivity."
+    reason += "Decision based on congestion, signals, and road connectivity."
 
     return reason
 
 # ================= MAIN =================
 def analyze(data):
+
     source = data.get("source")
     destination = data.get("destination")
     density = int(data.get("vehicles", 50))
@@ -161,21 +171,13 @@ def analyze(data):
     route, cost = find_route(source, destination, density, emergency)
 
     # 🟢 alternate route
-    alt_route = generate_alternate_route(route)
+    alt_route = generate_alternate_route(source, destination, density)
 
-    # traffic
     traffic = classify_traffic(density)
-
-    # eta
-    eta = calculate_eta(cost, emergency)
-
-    # confidence
+    eta = calculate_eta(cost, density, emergency)
     confidence = calculate_confidence(density, len(route))
 
-    # mode
     mode = "Emergency Priority" if emergency else "AI Smart Routing"
-
-    # reason
     reason = generate_reason(route, traffic, emergency)
 
     return {
