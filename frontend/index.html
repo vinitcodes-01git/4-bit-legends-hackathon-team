@@ -15,7 +15,7 @@
 <div class="container">
 
     <div class="sidebar">
-        <h2>🚦 Control Panel</h2>
+        <h1>🚦 Smart Traffic AI</h1>
 
         <label>Source</label>
         <select id="source"></select>
@@ -23,9 +23,10 @@
         <label>Destination</label>
         <select id="destination"></select>
 
-        <label>
-            <input type="checkbox" id="emergency"> Emergency Mode
-        </label>
+        <div class="toggle">
+            <input type="checkbox" id="emergency">
+            <label for="emergency">🚑 Emergency Mode</label>
+        </div>
 
         <button id="analyzeBtn">Analyze Traffic</button>
     </div>
@@ -34,8 +35,8 @@
         <div id="map"></div>
 
         <div id="results">
-            <h3>Results</h3>
-            <p>Run analysis to see results</p>
+            <h3>🧠 AI Analysis</h3>
+            <p>Select locations and analyze</p>
         </div>
     </div>
 

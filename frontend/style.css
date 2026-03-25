@@ -1,7 +1,7 @@
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
+    font-family: -apple-system, system-ui, sans-serif;
+    background: #eef2ff;
 }
 
 .container {
@@ -10,28 +10,41 @@ body {
 }
 
 .sidebar {
-    width: 300px;
-    background: #1e3a8a;
+    width: 320px;
+    background: linear-gradient(180deg, #1e3a8a, #2563eb);
     color: white;
-    padding: 20px;
+    padding: 25px;
     display: flex;
     flex-direction: column;
 }
 
-.sidebar h2 {
+.sidebar h1 {
+    font-size: 1.5rem;
     margin-bottom: 20px;
 }
 
 .sidebar select, .sidebar button {
-    padding: 10px;
+    padding: 12px;
     margin: 10px 0;
+    border-radius: 8px;
     border: none;
+    font-size: 15px;
 }
 
 .sidebar button {
-    background: #3b82f6;
-    color: white;
+    background: white;
+    color: #1e3a8a;
+    font-weight: bold;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+.sidebar button:hover {
+    transform: scale(1.05);
+}
+
+.toggle {
+    margin: 15px 0;
 }
 
 .main {
@@ -46,6 +59,7 @@ body {
 
 #results {
     background: white;
-    padding: 15px;
-    border-top: 2px solid #ddd;
+    padding: 20px;
+    border-top: 3px solid #2563eb;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
 }
