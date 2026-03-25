@@ -13,7 +13,9 @@ body {
     width:100%;
     height:100%;
     z-index:1;
-    filter: brightness(0.85) contrast(1.05);
+
+    /* 🔥 FIX: make routes visible */
+    filter: brightness(1) contrast(1.1);
 }
 
 /* ================= TOP BAR ================= */
@@ -30,8 +32,8 @@ body {
     justify-content:space-between;
     align-items:center;
 
-    background:rgba(2,6,23,0.65);
-    backdrop-filter:blur(30px);
+    background:rgba(2,6,23,0.6);
+    backdrop-filter:blur(25px);
     border-radius:18px;
 
     border:1px solid rgba(255,255,255,0.05);
@@ -44,7 +46,6 @@ body {
     font-weight:700;
     color:#fb923c;
     font-size:18px;
-    letter-spacing:0.5px;
 }
 
 .status {
@@ -72,26 +73,19 @@ body {
     left:30px;
 
     width:280px;
-    padding:22px;
+    padding:20px;
 
     display:flex;
     flex-direction:column;
-    gap:14px;
+    gap:12px;
 
-    background:rgba(2,6,23,0.7);
-    backdrop-filter:blur(25px);
-    border-radius:20px;
+    background:rgba(2,6,23,0.55); /* 🔥 lighter */
+    backdrop-filter:blur(20px);
+    border-radius:18px;
 
     border:1px solid rgba(255,255,255,0.05);
 
     z-index:20;
-    animation:slideIn 0.6s ease;
-}
-
-.control-panel h2 {
-    font-size:18px;
-    color:#f97316;
-    margin-bottom:5px;
 }
 
 /* INPUT GROUP */
@@ -109,24 +103,15 @@ label {
 /* INPUTS */
 select, input[type="range"] {
     padding:10px;
-    border-radius:12px;
+    border-radius:10px;
     border:1px solid rgba(255,255,255,0.05);
     background:#020617;
     color:white;
     outline:none;
-    transition:0.25s;
 }
 
 select:hover {
     border-color:#fb923c;
-    box-shadow:0 0 12px rgba(249,115,22,0.3);
-}
-
-/* SLIDER VALUE */
-#densityValue {
-    font-size:13px;
-    color:#fb923c;
-    font-weight:600;
 }
 
 /* ================= EMERGENCY ================= */
@@ -136,35 +121,32 @@ select:hover {
     align-items:center;
 
     padding:10px;
-    border-radius:12px;
+    border-radius:10px;
 
     background:rgba(239,68,68,0.1);
     border:1px solid rgba(239,68,68,0.3);
 
     color:#ef4444;
-    font-size:13px;
 }
 
 /* ================= BUTTON ================= */
 button {
     margin-top:10px;
-    padding:14px;
+    padding:12px;
     border:none;
-    border-radius:14px;
-
-    font-weight:600;
-    letter-spacing:0.5px;
+    border-radius:12px;
 
     background:linear-gradient(90deg,#f97316,#fb923c);
     color:white;
+    font-weight:600;
 
     cursor:pointer;
-    transition:all 0.3s ease;
+    transition:0.25s;
 }
 
 button:hover {
     transform:translateY(-2px);
-    box-shadow:0 10px 30px rgba(249,115,22,0.4);
+    box-shadow:0 8px 20px rgba(249,115,22,0.4);
 }
 
 /* ================= AI SIDE PANEL ================= */
@@ -173,117 +155,110 @@ button:hover {
     top:100px;
     right:30px;
 
-    width:260px;
-    padding:20px;
-
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-
-    background:rgba(2,6,23,0.7);
-    backdrop-filter:blur(25px);
-    border-radius:20px;
-
-    border:1px solid rgba(255,255,255,0.05);
-
-    z-index:20;
-    animation:slideInRight 0.6s ease;
-}
-
-.ai-panel h3 {
-    color:#38bdf8;
-    font-size:16px;
-}
-
-/* AI SECTION */
-.ai-section {
-    background:rgba(15,23,42,0.6);
-    padding:10px;
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.05);
-}
-
-.ai-section span {
-    font-size:12px;
-    color:#94a3b8;
-}
-
-.ai-section p {
-    margin-top:6px;
-    font-size:13px;
-    color:#e5e7eb;
-}
-
-/* ================= AI DOCK ================= */
-.ai-dock {
-    position:absolute;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-
-    width:92%;
-    padding:20px;
-
-    background:rgba(2,6,23,0.75);
-    backdrop-filter:blur(25px);
-
-    border-radius:20px;
-    border:1px solid rgba(255,255,255,0.05);
+    width:250px;
+    padding:16px;
 
     display:flex;
     flex-direction:column;
     gap:12px;
 
+    background:rgba(2,6,23,0.5); /* 🔥 lighter */
+    backdrop-filter:blur(20px);
+    border-radius:18px;
+
+    border:1px solid rgba(255,255,255,0.05);
+
     z-index:20;
-    animation:fadeUp 0.6s ease;
+}
+
+/* AI SECTION */
+.ai-section {
+    background:rgba(15,23,42,0.5);
+    padding:10px;
+    border-radius:10px;
+}
+
+.ai-section span {
+    font-size:11px;
+    color:#94a3b8;
+}
+
+.ai-section p {
+    font-size:12px;
+}
+
+/* ================= AI DOCK (🔥 FIXED) ================= */
+.ai-dock {
+    position:absolute;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:88%;
+    padding:16px;
+
+    background:rgba(2,6,23,0.5); /* 🔥 transparent */
+    backdrop-filter:blur(15px);
+
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,0.05);
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    z-index:20;
+
+    max-height:160px; /* 🔥 FIX */
+    overflow:hidden;
 }
 
 /* METRICS */
 .metrics {
     display:flex;
-    gap:30px;
+    gap:25px;
 }
 
 .metric span {
-    font-size:12px;
+    font-size:11px;
     color:#94a3b8;
 }
 
 .metric h3 {
-    margin-top:4px;
-    font-size:18px;
+    font-size:16px;
 }
 
 /* BAR */
 .bar {
-    width:120px;
-    height:6px;
+    width:100px;
+    height:5px;
     background:#020617;
-    border-radius:6px;
-    overflow:hidden;
+    border-radius:5px;
 }
 
 #confidenceBar {
-    height:6px;
+    height:5px;
     width:0%;
-    background:linear-gradient(90deg,#22c55e,#4ade80);
-    border-radius:6px;
-    transition:width 0.4s ease;
+    background:#22c55e;
 }
 
-/* AI TEXT */
+/* ================= AI TEXT (🔥 FIXED) ================= */
 .ai-text {
     color:#38bdf8;
-    font-size:14px;
-    line-height:1.6;
+    font-size:12px;
+    line-height:1.5;
 
-    background:rgba(15,23,42,0.6);
-    padding:14px;
-    border-radius:12px;
+    background:rgba(15,23,42,0.5);
+    padding:10px;
+    border-radius:10px;
 
-    border:1px solid rgba(255,255,255,0.05);
+    max-height:70px;
+    overflow-y:auto;
+}
 
-    animation:fadeIn 0.6s ease;
+/* ================= ROUTE VISIBILITY ================= */
+.leaflet-interactive {
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.7));
 }
 
 /* ================= ANIMATIONS ================= */
@@ -298,30 +273,15 @@ button:hover {
     to {opacity:1; transform:translateY(0);}
 }
 
-@keyframes fadeUp {
-    from {opacity:0; transform:translateY(40px);}
-    to {opacity:1; transform:translateY(0);}
-}
-
-@keyframes slideIn {
-    from {opacity:0; transform:translateX(-30px);}
-    to {opacity:1; transform:translateX(0);}
-}
-
-@keyframes slideInRight {
-    from {opacity:0; transform:translateX(30px);}
-    to {opacity:1; transform:translateX(0);}
-}
-
 /* ================= RESPONSIVE ================= */
 @media(max-width:900px){
     .control-panel,
     .ai-panel {
-        width:220px;
+        width:200px;
     }
 
     .metrics {
         flex-wrap:wrap;
-        gap:20px;
+        gap:15px;
     }
 }
