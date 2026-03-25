@@ -1,33 +1,56 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import sys
-import os
+import traceback
 
-# Correct path to AI folder
-sys.path.append(os.path.abspath("../"))
+# import your AI logic
+from ai_logic import analyze
 
-# Import AI function
-from ai.ai_logic import analyze
-
-# Initialize app
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # allow frontend connection
 
-# Test route
+# ================= HEALTH CHECK =================
 @app.route("/")
 def home():
-    return "Backend running"
+    return jsonify({
+        "status": "Backend Running 🚀",
+        "message": "Nagpur Smart Traffic AI is active"
+    })
 
-# AI route
+
+# ================= MAIN API =================
 @app.route("/analyze", methods=["POST"])
 def analyze_route():
     try:
-        data = request.json
-        result = analyze(data)
-        return jsonify(result)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        data = request.get_json()
 
-# Run server
+        # 🛑 Validate input
+        if not data:
+            return jsonify({"error": "No data received"}), 400
+
+        if not data.get("source") or not data.get("destination"):
+            return jsonify({"error": "Missing source or destination"}), 400
+
+        # 🧠 Call AI logic
+        result = analyze(data)
+
+        # 🛑 Validate AI response
+        if not result or "route" not in result:
+            return jsonify({
+                "error": "AI failed to generate route"
+            }), 500
+
+        return jsonify(result)
+
+    except Exception as e:
+        print("❌ ERROR:", str(e))
+        traceback.print_exc()
+
+        return jsonify({
+            "error": "Internal Server Error",
+            "message": str(e)
+        }), 500
+
+
+# ================= RUN SERVER =================
 if __name__ == "__main__":
     app.run(debug=True)

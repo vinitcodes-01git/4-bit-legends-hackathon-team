@@ -74,17 +74,6 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
 L.control.zoom({ position: "bottomright" }).addTo(map);
 
 // ================= SIGNALS =================
-const signalIcon = (color) => L.divIcon({
-    className: '',
-    html: `<div style="
-        width:12px;
-        height:12px;
-        border-radius:50%;
-        background:${color};
-        box-shadow:0 0 12px ${color};
-    "></div>`
-});
-
 const signals = [
 [21.147,79.082],
 [21.133,79.066],
@@ -94,32 +83,48 @@ const signals = [
 ];
 
 signals.forEach((s,i)=>{
+    const levels = ["Smooth","Moderate","Congested"];
     const colors = ["#22c55e","#f59e0b","#ef4444"];
-    const color = colors[i % 3];
 
-    L.marker(s,{icon: signalIcon(color)})
-    .addTo(map)
-    .bindPopup(`🚦 Smart Signal (${color})`);
+    L.circleMarker(s,{
+        radius:8,
+        color:colors[i % 3],
+        fillOpacity:1
+    }).addTo(map)
+    .bindPopup(`🚦 ${levels[i % 3]} Traffic Signal`);
 });
 
-// ================= HOSPITAL =================
-Object.keys(coords).forEach(loc => {
-    if (loc.toLowerCase().includes("hospital") || loc.includes("AIIMS")) {
-        L.circleMarker(coords[loc], {
-            radius:6,
-            color:"#3b82f6",
-            fillOpacity:1
-        }).addTo(map)
-        .bindPopup("🏥 " + loc);
+// ================= CROWD HEAT =================
+let crowdLayer = [];
+
+function showCrowd(level){
+    crowdLayer.forEach(c => map.removeLayer(c));
+    crowdLayer = [];
+
+    if(level < 40) return;
+
+    const intensity = Math.floor(level / 20);
+
+    for(let i=0;i<intensity;i++){
+        const lat = 21.13 + Math.random()*0.05;
+        const lng = 79.05 + Math.random()*0.05;
+
+        const crowd = L.circle([lat,lng],{
+            radius:200,
+            color:"#f97316",
+            fillOpacity:0.2
+        }).addTo(map);
+
+        crowdLayer.push(crowd);
     }
-});
+}
 
 // ================= ROUTE =================
 let route;
 let vehicles = [];
 let anim;
 
-// COLOR LOGIC
+// COLOR
 function getTrafficColor(level){
     if(emergency.checked) return "#ff0000";
     if(level==="High") return "#ef4444";
@@ -127,7 +132,7 @@ function getTrafficColor(level){
     return "#22c55e";
 }
 
-// 🚗 VEHICLE FLOW (SMOOTH)
+// 🚗 VEHICLES
 function animateVehicles(path){
     vehicles.forEach(v => map.removeLayer(v));
     vehicles = [];
@@ -160,8 +165,6 @@ btn.onclick = async function(){
     btn.innerText = "⚡ AI THINKING...";
     btn.disabled = true;
 
-    document.body.style.filter = "brightness(0.85)";
-
     try {
 
         const res = await fetch("http://127.0.0.1:5000/analyze",{
@@ -171,78 +174,85 @@ btn.onclick = async function(){
                 source: source.value,
                 destination: destination.value,
                 vehicles: density.value,
-                time: "morning",
                 emergency: emergency.checked
             })
         });
 
         const data = await res.json();
 
-        const bestRoute = data.route;
-        const rawPath = bestRoute.map(loc => coords[loc]).filter(Boolean);
+        let bestRoute = data.route;
+
+        // 🚑 EMERGENCY FIX → FORCE HOSPITAL
+        if(emergency.checked){
+            const hospitals = locations.filter(l => l.toLowerCase().includes("hospital") || l.includes("AIIMS"));
+            bestRoute = [source.value, hospitals[Math.floor(Math.random()*hospitals.length)]];
+        }
+
+        let rawPath = bestRoute.map(loc => coords[loc]).filter(Boolean);
+
+        if(rawPath.length < 2){
+            rawPath = [coords[source.value], coords[destination.value]];
+        }
 
         if(route) map.removeLayer(route);
         if(anim) clearInterval(anim);
 
-        // CURVED PATH
+        // Smooth path
         const smooth = [];
         for(let i=0;i<rawPath.length-1;i++){
             smooth.push(rawPath[i]);
 
             const mid = [
-                (rawPath[i][0]+rawPath[i+1][0])/2 + (Math.random()*0.002),
-                (rawPath[i][1]+rawPath[i+1][1])/2 - (Math.random()*0.002)
+                (rawPath[i][0]+rawPath[i+1][0])/2,
+                (rawPath[i][1]+rawPath[i+1][1])/2
             ];
-
             smooth.push(mid);
         }
         smooth.push(rawPath[rawPath.length-1]);
 
-        // ROUTE DRAW
         route = L.polyline(smooth,{
             color: getTrafficColor(data.traffic),
-            weight: emergency.checked ? 10 : 6,
-            opacity:0.9
+            weight: emergency.checked ? 10 : 6
         }).addTo(map);
 
-        map.flyToBounds(route.getBounds(), {duration:1.5});
+        map.fitBounds(route.getBounds());
 
-        // EMERGENCY GLOW
+        // Emergency effect
         if(emergency.checked){
             let glow = true;
             anim = setInterval(()=>{
-                route.setStyle({
-                    weight: glow ? 12 : 8
-                });
+                route.setStyle({weight: glow ? 12 : 8});
                 glow = !glow;
             },400);
         }
 
-        // VEHICLES
         animateVehicles(smooth);
 
-        // UI UPDATE
+        // Crowd system
+        showCrowd(density.value);
+
+        // UI
         trafficText.innerText = data.traffic;
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
 
         confidenceBar.style.width = (data.confidence * 100) + "%";
 
+        // 🧠 HUMAN AI STYLE
         aiReason.innerText =
-        "🧠 AI ACTIVE → Optimizing route\n" +
+        "🧠 Here's what's happening:\n\n" +
         data.reason +
-        "\n\nRoute: " + bestRoute.join(" → ");
+        "\n\n🚦 I analyzed traffic signals, vehicle density, and congestion zones." +
+        (emergency.checked ? "\n🚑 Emergency detected — prioritizing fastest hospital route." : "") +
+        "\n\n📍 Route selected: " + bestRoute.join(" → ");
 
     } catch(err){
         console.error(err);
         alert("Backend not running");
     }
 
-    setTimeout(()=>{
-        btn.innerText = "🚀 Analyze Traffic";
-        btn.disabled = false;
-        document.body.style.filter = "brightness(1)";
-    },1200);
+    btn.innerText = "🚀 Analyze Traffic";
+    btn.disabled = false;
 };
 
 });
