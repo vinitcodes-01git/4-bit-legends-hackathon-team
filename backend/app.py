@@ -32,7 +32,7 @@ def enhance_ai_response(data, result):
     Adds intelligence layer on top of base AI logic
     """
 
-    traffic_level = data.get("vehicles", 50)
+    traffic_level = int(data.get("vehicles", 0))
     emergency = data.get("emergency", False)
 
     # 🧠 Traffic classification
