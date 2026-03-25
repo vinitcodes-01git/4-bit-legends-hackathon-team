@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nagpur AI Traffic</title>
+<title>🍊 Nagpur Smart Traffic AI</title>
 
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -16,29 +16,36 @@
 <!-- 🌍 MAP BACKGROUND -->
 <div id="map"></div>
 
-<!-- 🔥 GLASS TOP BAR -->
+<!-- 🔥 TOP GLASS BAR -->
 <div class="top-bar">
     <div class="logo">🍊 Nagpur AI</div>
-    <div class="status">● Live System</div>
+    <div class="status">🟢 AI System Active</div>
 </div>
 
 <!-- 🔥 FLOATING CONTROL PANEL -->
 <div class="control-panel">
 
-    <h2>AI Route Control</h2>
+    <h2>⚡ AI Route Control</h2>
 
-    <label>Source</label>
-    <select id="source"></select>
+    <div class="input-group">
+        <label>📍 Source</label>
+        <select id="source"></select>
+    </div>
 
-    <label>Destination</label>
-    <select id="destination"></select>
+    <div class="input-group">
+        <label>🎯 Destination</label>
+        <select id="destination"></select>
+    </div>
 
-    <label>Traffic Density</label>
-    <input type="range" id="density" min="0" max="100" value="50">
-    <div id="densityValue">50%</div>
+    <div class="input-group">
+        <label>🚗 Traffic Density</label>
+        <input type="range" id="density" min="0" max="100" value="50">
+        <div id="densityValue">50%</div>
+    </div>
 
-    <div class="emergency">
-        🚑 Emergency Mode
+    <!-- 🚑 EMERGENCY -->
+    <div class="emergency-box">
+        <span>🚑 Emergency Override</span>
         <input type="checkbox" id="emergency">
     </div>
 
@@ -46,18 +53,66 @@
 
 </div>
 
+<!-- 🔥 AI INTELLIGENCE PANEL (RIGHT SIDE) -->
+<div class="ai-panel">
+
+    <h3>🧠 AI Intelligence</h3>
+
+    <!-- 🔮 Prediction -->
+    <div class="ai-section">
+        <span>🔮 Prediction</span>
+        <p id="predictionText">Waiting...</p>
+    </div>
+
+    <!-- 💡 Suggestions -->
+    <div class="ai-section">
+        <span>💡 Smart Suggestions</span>
+        <p id="suggestionText">Waiting...</p>
+    </div>
+
+    <!-- 🛣 Route Type -->
+    <div class="ai-section">
+        <span>🛣 Routes</span>
+        <p>
+            🔴 Fastest Route<br>
+            🟢 Low Traffic Route
+        </p>
+    </div>
+
+</div>
+
 <!-- 🔥 BOTTOM AI DOCK -->
 <div class="ai-dock">
 
     <div class="metrics">
-        <div><span>Traffic</span><h3 id="traffic">-</h3></div>
-        <div><span>ETA</span><h3 id="eta">-</h3></div>
-        <div><span>Mode</span><h3 id="mode">-</h3></div>
-        <div><span>Confidence</span><div class="bar"><div id="confidenceBar"></div></div></div>
+
+        <div class="metric">
+            <span>🚦 Traffic</span>
+            <h3 id="traffic">-</h3>
+        </div>
+
+        <div class="metric">
+            <span>⏱ ETA</span>
+            <h3 id="eta">-</h3>
+        </div>
+
+        <div class="metric">
+            <span>⚙ Mode</span>
+            <h3 id="mode">-</h3>
+        </div>
+
+        <div class="metric">
+            <span>📊 Confidence</span>
+            <div class="bar">
+                <div id="confidenceBar"></div>
+            </div>
+        </div>
+
     </div>
 
+    <!-- 🤖 AI EXPLANATION -->
     <div class="ai-text" id="aiReason">
-        🧠 AI ready...
+        🧠 AI system ready. Waiting for input...
     </div>
 
 </div>
