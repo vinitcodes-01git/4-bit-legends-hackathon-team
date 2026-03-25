@@ -13,7 +13,6 @@ const modeText = document.getElementById("mode");
 const confidenceBar = document.getElementById("confidenceBar");
 const aiReason = document.getElementById("aiReason");
 
-// 🔥 NEW UI ELEMENTS
 const predictionText = document.getElementById("predictionText");
 const suggestionText = document.getElementById("suggestionText");
 
@@ -73,61 +72,77 @@ let map = L.map("map",{zoomControl:false}).setView([21.1458,79.0882],13);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 L.control.zoom({position:"bottomright"}).addTo(map);
 
-// ================= 🚦 SIGNALS =================
+// ================= 🚦 SIGNAL SYSTEM =================
+function signalIcon(color){
+    return L.divIcon({
+        className:'',
+        html:`<div style="width:14px;height:14px;border-radius:50%;
+        background:${color};box-shadow:0 0 10px ${color};"></div>`
+    });
+}
+
 function createSignal(latlng){
     let state = 0;
     const colors = ["#22c55e","#f59e0b","#ef4444"];
 
-    const marker = L.circleMarker(latlng,{
-        radius:10,
-        color:colors[state],
-        fillOpacity:1
-    }).addTo(map);
+    const marker = L.marker(latlng,{icon:signalIcon(colors[state])}).addTo(map);
 
-    setInterval(()=>{
+    function updateSignal(){
+        const trafficLevel = density.value;
+
+        let delay = trafficLevel > 70 ? 1500 :
+                    trafficLevel > 40 ? 2500 : 3500;
+
         state = (state+1)%3;
-        marker.setStyle({color:colors[state]});
-    },2500);
+        marker.setIcon(signalIcon(colors[state]));
+
+        setTimeout(updateSignal, delay);
+    }
+
+    updateSignal();
 }
 
+// More realistic signals
 [
-[21.147,79.082],
-[21.133,79.066],
-[21.140,79.080],
-[21.110,79.050],
-[21.150,79.090],
-[21.145,79.085],
-[21.135,79.075]
+[21.147,79.082],[21.133,79.066],[21.140,79.080],
+[21.110,79.050],[21.150,79.090],[21.145,79.085],
+[21.135,79.075],[21.138,79.060],[21.128,79.072],
+[21.120,79.065],[21.155,79.095],[21.142,79.078]
 ].forEach(createSignal);
 
 // ================= 🚧 METRO =================
-[
+const metroZones = [
 [21.140,79.078],
 [21.130,79.065],
 [21.120,79.055]
-].forEach(loc=>{
+];
+
+metroZones.forEach(loc=>{
     L.circle(loc,{
         radius:200,
         color:"#f97316",
-        fillOpacity:0.2
-    }).addTo(map).bindPopup("🚧 Metro Construction");
+        fillOpacity:0.25
+    }).addTo(map).bindPopup("🚧 Metro Construction Zone");
 });
 
 // ================= 🚧 ACCIDENT =================
+let accidentPoint = null;
+
 function generateAccident(){
-    const loc = Object.values(coords)[Math.floor(Math.random()*locations.length)];
-    L.circle(loc,{
+    accidentPoint = Object.values(coords)[Math.floor(Math.random()*locations.length)];
+
+    L.circle(accidentPoint,{
         radius:150,
         color:"#ef4444",
         fillOpacity:0.3
-    }).addTo(map).bindPopup("🚧 Accident");
+    }).addTo(map).bindPopup("🚨 Accident Detected");
 }
 
 // ================= CROWD =================
 function showCrowd(level){
     if(level < 40) return;
 
-    for(let i=0;i<Math.floor(level/15);i++){
+    for(let i=0;i<Math.floor(level/12);i++){
         const loc = Object.values(coords)[Math.floor(Math.random()*locations.length)];
 
         L.circle(loc,{
@@ -138,23 +153,65 @@ function showCrowd(level){
     }
 }
 
-// ================= ROUTE =================
-let route1, route2;
+// ================= 🧠 SMART SUGGESTIONS =================
+function generateSuggestions(route, trafficLevel, emergencyMode){
 
-function smoothPath(path){
-    const smooth = [];
-    for(let i=0;i<path.length-1;i++){
-        smooth.push(path[i]);
-        smooth.push([
-            (path[i][0]+path[i+1][0])/2,
-            (path[i][1]+path[i+1][1])/2
-        ]);
+    const suggestions = [];
+
+    if(trafficLevel > 70){
+        suggestions.push("Heavy congestion → avoid main intersections");
+    } else if(trafficLevel > 40){
+        suggestions.push("Moderate traffic → expect signal delays");
+    } else {
+        suggestions.push("Smooth traffic → optimal route");
     }
-    smooth.push(path[path.length-1]);
-    return smooth;
+
+    if(route.includes("Gandhibagh")){
+        suggestions.push("Avoid Gandhibagh (high congestion)");
+    }
+
+    if(route.includes("Sitabuldi")){
+        suggestions.push("Sitabuldi is a busy hub → delays possible");
+    }
+
+    if(route.includes("Wardha Road")){
+        suggestions.push("Wardha Road gives faster highway access");
+    }
+
+    if(route.includes("Civil Lines")){
+        suggestions.push("Civil Lines is smoother alternative route");
+    }
+
+    const destinationNode = route[route.length-1];
+
+    if(destinationNode.toLowerCase().includes("hospital")){
+        suggestions.push("Hospital route prioritized");
+    }
+
+    if(destinationNode === "Airport"){
+        suggestions.push("Airport route → keep buffer time");
+    }
+
+    // Accident awareness
+    if(accidentPoint){
+        suggestions.push("Accident nearby → rerouting applied");
+    }
+
+    // Metro awareness
+    if(route.some(r => r === "Dharampeth" || r === "Sitabuldi")){
+        suggestions.push("Metro construction may slow traffic");
+    }
+
+    if(emergencyMode){
+        suggestions.push("Emergency mode → signals overridden");
+    }
+
+    return suggestions;
 }
 
-// ================= ANALYZE =================
+// ================= ROUTING =================
+let route1, route2;
+
 btn.onclick = async function(){
 
     if(!source.value || !destination.value){
@@ -185,50 +242,54 @@ btn.onclick = async function(){
         const bestRoute = data.route;
         const altRoute = [...bestRoute].reverse();
 
-        const path1 = smoothPath(bestRoute.map(l=>coords[l]));
-        const path2 = smoothPath(altRoute.map(l=>coords[l]));
+        if(route1) map.removeControl(route1);
+        if(route2) map.removeControl(route2);
 
-        if(route1) map.removeLayer(route1);
-        if(route2) map.removeLayer(route2);
+        route1 = L.Routing.control({
+            waypoints: bestRoute.map(loc => L.latLng(...coords[loc])),
+            lineOptions: { styles:[{color:"#ef4444",weight:6}] },
+            createMarker: () => null,
+            addWaypoints:false
+        }).addTo(map);
 
-        route1 = L.polyline(path1,{color:"#ef4444",weight:6}).addTo(map);
-        route2 = L.polyline(path2,{color:"#22c55e",weight:4,dashArray:"6,6"}).addTo(map);
-
-        map.fitBounds(route1.getBounds());
+        route2 = L.Routing.control({
+            waypoints: altRoute.map(loc => L.latLng(...coords[loc])),
+            lineOptions: { styles:[{color:"#22c55e",weight:4,dashArray:"6,6"}] },
+            createMarker: () => null,
+            addWaypoints:false
+        }).addTo(map);
 
         showCrowd(density.value);
 
-        // ================= AI LOGIC =================
+        // ================= AI =================
         const prediction =
             density.value > 70 ? "High congestion expected" :
             density.value > 40 ? "Moderate traffic expected" :
             "Smooth traffic expected";
 
-        const suggestions = [
-            "Avoid Gandhibagh during peak hours",
-            "Civil Lines is faster alternative",
-            "Travel early morning for best results"
-        ];
+        const smartSuggestions = generateSuggestions(
+            bestRoute,
+            density.value,
+            emergency.checked
+        );
 
-        // ================= UI =================
         trafficText.innerText = data.traffic;
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
 
         confidenceBar.style.width = (data.confidence*100)+"%";
 
-        // 🔥 UPDATE NEW PANELS
         predictionText.innerText = prediction;
-        suggestionText.innerText = "✔ " + suggestions.join("\n✔ ");
+        suggestionText.innerText = "✔ " + smartSuggestions.join("\n✔ ");
 
-        // 🤖 AI TEXT
         aiReason.innerText =
         "🧠 AI Analysis:\n\n" +
-        prediction + ".\n\n" +
-        "🚦 Signals, congestion, accidents, and metro zones analyzed.\n\n" +
-        (emergency.checked ? "🚑 Emergency priority enabled.\n\n" : "") +
-        "⚡ Fastest route shown in red.\n🌿 Alternative route in green.\n\n" +
-        "📍 Selected: " + bestRoute.join(" → ");
+        prediction + "\n\n" +
+        "🚦 Signals + congestion + accidents analyzed.\n" +
+        "🚧 Metro zones considered.\n\n" +
+        (emergency.checked ? "🚑 Emergency routing enabled.\n\n" : "") +
+        "🔴 Fastest route\n🟢 Alternative route\n\n" +
+        "📍 " + bestRoute.join(" → ");
 
     } catch(err){
         alert("Backend error");
