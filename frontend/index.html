@@ -13,70 +13,56 @@
 
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-    <div class="logo">🍊 Nagpur AI</div>
-    <div class="status">
-        <span class="dot"></span>
-        Live AI System
+<!-- MAP FULLSCREEN -->
+<div id="map"></div>
+
+<!-- 🔥 FLOATING AI PANEL -->
+<div class="ai-panel">
+
+    <h1>🍊 Nagpur AI</h1>
+
+    <select id="source"></select>
+    <select id="destination"></select>
+
+    <input type="range" id="density" min="0" max="100" value="50">
+    <div id="densityValue">50%</div>
+
+    <div class="emergency-toggle">
+        🚑 Emergency Mode
+        <input type="checkbox" id="emergency">
     </div>
+
+    <button id="analyzeBtn">⚡ Start AI Routing</button>
+
 </div>
 
-<!-- MAIN APP -->
-<div class="app">
+<!-- 🔥 AI RESULT BAR -->
+<div class="ai-bottom">
 
-    <!-- LEFT CONTROL (SMALL NOW) -->
-    <div class="control">
-
-        <h2>Control</h2>
-
-        <select id="source"></select>
-        <select id="destination"></select>
-
-        <input type="range" id="density" min="0" max="100" value="50">
-        <div id="densityValue">50%</div>
-
-        <div class="emergency-mini">
-            🚑 Emergency
-            <input type="checkbox" id="emergency">
-        </div>
-
-        <button id="analyzeBtn">⚡ Start AI</button>
-
+    <div class="metric">
+        <span>Traffic</span>
+        <h2 id="traffic">-</h2>
     </div>
 
-    <!-- MAP (MAIN HERO) -->
-    <div id="map"></div>
+    <div class="metric">
+        <span>ETA</span>
+        <h2 id="eta">-</h2>
+    </div>
 
-    <!-- BOTTOM DASHBOARD -->
-    <div class="bottom-panel">
+    <div class="metric">
+        <span>Mode</span>
+        <h2 id="mode">-</h2>
+    </div>
 
-        <div class="metric">
-            <span>Traffic</span>
-            <h2 id="traffic">-</h2>
+    <div class="metric">
+        <span>Confidence</span>
+        <div class="progress">
+            <div id="confidenceBar"></div>
         </div>
+    </div>
 
-        <div class="metric">
-            <span>ETA</span>
-            <h2 id="eta">-</h2>
-        </div>
-
-        <div class="metric">
-            <span>Mode</span>
-            <h2 id="mode">-</h2>
-        </div>
-
-        <div class="metric">
-            <span>Confidence</span>
-            <div class="progress">
-                <div id="confidenceBar"></div>
-            </div>
-        </div>
-
-        <div class="ai-box">
-            🧠 <span id="aiReason">AI waiting...</span>
-        </div>
-
+    <div class="ai-text" id="aiReason">
+        AI waiting...
     </div>
 
 </div>

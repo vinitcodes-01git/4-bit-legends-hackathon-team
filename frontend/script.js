@@ -65,7 +65,7 @@ density.oninput = () => {
 };
 
 // MAP
-let map = L.map("map").setView([21.15,79.08], 12);
+let map = L.map("map").setView([21.1458,79.0882], 13);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
 .addTo(map);
