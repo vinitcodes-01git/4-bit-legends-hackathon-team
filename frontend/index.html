@@ -8,7 +8,7 @@
 
 <link rel="stylesheet" href="style.css">
 
-<!-- Leaflet -->
+<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
 
@@ -60,19 +60,16 @@
 
     <h3>AI Insights</h3>
 
-    <!-- Prediction -->
     <div class="ai-section">
         <span>Traffic Prediction</span>
         <p id="predictionText">Waiting for input</p>
     </div>
 
-    <!-- Suggestions -->
     <div class="ai-section">
         <span>Route Suggestions</span>
         <p id="suggestionText">Waiting for analysis</p>
     </div>
 
-    <!-- Route Info -->
     <div class="ai-section">
         <span>Routing Strategy</span>
         <p>
@@ -112,7 +109,6 @@
 
     </div>
 
-    <!-- AI Explanation -->
     <div class="ai-text" id="aiReason">
         System ready. Select route and analyze.
     </div>
@@ -120,11 +116,21 @@
 </div>
 
 <!-- ================= SCRIPTS ================= -->
+
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Routing Machine -->
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
-<!-- Main Script -->
-<script src="script.js"></script>
+<!-- FIX: Load script AFTER everything -->
+<script>
+window.onload = function() {
+    const script = document.createElement("script");
+    script.src = "script.js";
+    document.body.appendChild(script);
+};
+</script>
 
 </body>
 </html>
