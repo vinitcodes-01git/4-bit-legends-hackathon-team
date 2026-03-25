@@ -22,7 +22,7 @@
 <!-- ================= TOP BAR ================= -->
 <div class="top-bar">
     <div class="logo">Nagpur Traffic AI</div>
-    <div class="status">System Active</div>
+    <div class="status">● System Active</div>
 </div>
 
 <!-- ================= CONTROL PANEL ================= -->
@@ -31,12 +31,12 @@
     <h2>Route Control</h2>
 
     <div class="input-group">
-        <label>Source</label>
+        <label>Source Location</label>
         <select id="source"></select>
     </div>
 
     <div class="input-group">
-        <label>Destination</label>
+        <label>Destination Location</label>
         <select id="destination"></select>
     </div>
 
@@ -60,21 +60,24 @@
 
     <h3>AI Insights</h3>
 
+    <!-- Prediction -->
     <div class="ai-section">
         <span>Traffic Prediction</span>
         <p id="predictionText">Waiting for input</p>
     </div>
 
+    <!-- Suggestions -->
     <div class="ai-section">
         <span>Route Suggestions</span>
         <p id="suggestionText">Waiting for analysis</p>
     </div>
 
+    <!-- Route Info -->
     <div class="ai-section">
         <span>Routing Strategy</span>
         <p>
-            Fastest Route (Red)<br>
-            Alternate Route (Green)
+            🔴 Fastest Route<br>
+            🟢 Alternate Route
         </p>
     </div>
 
@@ -109,6 +112,7 @@
 
     </div>
 
+    <!-- AI Explanation -->
     <div class="ai-text" id="aiReason">
         System ready. Select route and analyze.
     </div>
@@ -118,6 +122,8 @@
 <!-- ================= SCRIPTS ================= -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<!-- Main Script -->
 <script src="script.js"></script>
 
 </body>
