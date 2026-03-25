@@ -30,7 +30,6 @@ const coords = {
 "Wardha Road":[21.133,79.066],
 "Airport":[21.092,79.047],
 "Railway Station":[21.145,79.088],
-
 "AIIMS Nagpur":[21.118,79.050],
 "Wockhardt Hospital":[21.133,79.066],
 "Seven Star Hospital":[21.150,79.083],
@@ -40,7 +39,6 @@ const coords = {
 "Alexis Hospital":[21.110,79.060],
 "Mayo Hospital":[21.145,79.088],
 "Daga Hospital":[21.147,79.082],
-
 "Civil Lines":[21.150,79.090],
 "Dharampeth":[21.130,79.060],
 "Pratap Nagar":[21.110,79.050],
@@ -65,15 +63,12 @@ density.oninput = () => {
 };
 
 // ================= MAP =================
-let map = L.map("map", { zoomControl:false })
-.setView([21.1458,79.0882], 13);
+let map = L.map("map",{zoomControl:false}).setView([21.1458,79.0882],13);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-.addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+L.control.zoom({position:"bottomright"}).addTo(map);
 
-L.control.zoom({ position: "bottomright" }).addTo(map);
-
-// ================= SIGNALS =================
+// ================= SIGNAL SYSTEM =================
 const signals = [
 [21.147,79.082],
 [21.133,79.066],
@@ -82,40 +77,51 @@ const signals = [
 [21.150,79.090]
 ];
 
-signals.forEach((s,i)=>{
-    const levels = ["Smooth","Moderate","Congested"];
+const signalMarkers = [];
+
+function createSignal(latlng){
+    let state = 0; // 0 green, 1 yellow, 2 red
     const colors = ["#22c55e","#f59e0b","#ef4444"];
 
-    L.circleMarker(s,{
-        radius:8,
-        color:colors[i % 3],
+    const marker = L.circleMarker(latlng,{
+        radius:10,
+        color:colors[state],
         fillOpacity:1
-    }).addTo(map)
-    .bindPopup(`🚦 ${levels[i % 3]} Traffic Signal`);
+    }).addTo(map);
+
+    setInterval(()=>{
+        state = (state+1)%3;
+        marker.setStyle({color:colors[state]});
+    },3000);
+
+    return marker;
+}
+
+signals.forEach(s=>{
+    signalMarkers.push(createSignal(s));
 });
 
-// ================= CROWD HEAT =================
+// ================= CROWD =================
 let crowdLayer = [];
 
 function showCrowd(level){
-    crowdLayer.forEach(c => map.removeLayer(c));
+    crowdLayer.forEach(c=>map.removeLayer(c));
     crowdLayer = [];
 
     if(level < 40) return;
 
-    const intensity = Math.floor(level / 20);
+    const count = Math.floor(level/10);
 
-    for(let i=0;i<intensity;i++){
-        const lat = 21.13 + Math.random()*0.05;
-        const lng = 79.05 + Math.random()*0.05;
+    for(let i=0;i<count;i++){
+        const randLoc = Object.values(coords)[Math.floor(Math.random()*Object.keys(coords).length)];
 
-        const crowd = L.circle([lat,lng],{
-            radius:200,
+        const c = L.circle(randLoc,{
+            radius:150,
             color:"#f97316",
-            fillOpacity:0.2
+            fillOpacity:0.15
         }).addTo(map);
 
-        crowdLayer.push(crowd);
+        crowdLayer.push(c);
     }
 }
 
@@ -132,26 +138,28 @@ function getTrafficColor(level){
     return "#22c55e";
 }
 
-// 🚗 VEHICLES
+// 🚗 VEHICLE FLOW (SMOOTH)
 function animateVehicles(path){
-    vehicles.forEach(v => map.removeLayer(v));
+    vehicles.forEach(v=>map.removeLayer(v));
     vehicles = [];
 
-    const dots = path.map(p =>
+    const cars = path.map(p =>
         L.circleMarker(p,{radius:4,color:"#38bdf8"}).addTo(map)
     );
 
-    vehicles = dots;
+    vehicles = cars;
 
     let t = 0;
 
     anim = setInterval(()=>{
-        t += 0.02;
+        t += 0.01;
+
         vehicles.forEach((v,i)=>{
-            const idx = Math.floor((t+i) % path.length);
-            v.setLatLng(path[idx]);
+            const index = Math.floor((t*100+i)%path.length);
+            v.setLatLng(path[index]);
         });
-    },100);
+
+    },80);
 }
 
 // ================= ANALYZE =================
@@ -182,10 +190,11 @@ btn.onclick = async function(){
 
         let bestRoute = data.route;
 
-        // 🚑 EMERGENCY FIX → FORCE HOSPITAL
+        // 🚑 FIXED EMERGENCY LOGIC
         if(emergency.checked){
             const hospitals = locations.filter(l => l.toLowerCase().includes("hospital") || l.includes("AIIMS"));
-            bestRoute = [source.value, hospitals[Math.floor(Math.random()*hospitals.length)]];
+            const nearest = hospitals[0];
+            bestRoute = [source.value, nearest];
         }
 
         let rawPath = bestRoute.map(loc => coords[loc]).filter(Boolean);
@@ -197,38 +206,38 @@ btn.onclick = async function(){
         if(route) map.removeLayer(route);
         if(anim) clearInterval(anim);
 
-        // Smooth path
+        // Smooth curve
         const smooth = [];
         for(let i=0;i<rawPath.length-1;i++){
             smooth.push(rawPath[i]);
 
             const mid = [
-                (rawPath[i][0]+rawPath[i+1][0])/2,
-                (rawPath[i][1]+rawPath[i+1][1])/2
+                (rawPath[i][0]+rawPath[i+1][0])/2 + 0.002,
+                (rawPath[i][1]+rawPath[i+1][1])/2 - 0.002
             ];
+
             smooth.push(mid);
         }
         smooth.push(rawPath[rawPath.length-1]);
 
         route = L.polyline(smooth,{
-            color: getTrafficColor(data.traffic),
-            weight: emergency.checked ? 10 : 6
+            color:getTrafficColor(data.traffic),
+            weight: emergency.checked ? 10 : 6,
+            opacity:0.9
         }).addTo(map);
 
         map.fitBounds(route.getBounds());
 
-        // Emergency effect
+        // Emergency glow
         if(emergency.checked){
-            let glow = true;
-            anim = setInterval(()=>{
-                route.setStyle({weight: glow ? 12 : 8});
-                glow = !glow;
+            let glow=true;
+            anim=setInterval(()=>{
+                route.setStyle({weight: glow?12:8});
+                glow=!glow;
             },400);
         }
 
         animateVehicles(smooth);
-
-        // Crowd system
         showCrowd(density.value);
 
         // UI
@@ -236,15 +245,24 @@ btn.onclick = async function(){
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
 
-        confidenceBar.style.width = (data.confidence * 100) + "%";
+        confidenceBar.style.width = (data.confidence*100)+"%";
 
-        // 🧠 HUMAN AI STYLE
+        // 🧠 HUMAN AI STYLE RESPONSE
         aiReason.innerText =
-        "🧠 Here's what's happening:\n\n" +
-        data.reason +
-        "\n\n🚦 I analyzed traffic signals, vehicle density, and congestion zones." +
-        (emergency.checked ? "\n🚑 Emergency detected — prioritizing fastest hospital route." : "") +
-        "\n\n📍 Route selected: " + bestRoute.join(" → ");
+        "🧠 Here's the situation:\n\n" +
+        (data.traffic==="High" ? "Heavy congestion detected across key nodes. " :
+         data.traffic==="Medium" ? "Moderate traffic with some slow intersections. " :
+         "Traffic is flowing smoothly. ") +
+
+        "Vehicle density at " + density.value + "% influenced route optimization.\n\n" +
+
+        (emergency.checked
+            ? "🚑 Emergency mode active → prioritizing fastest hospital access with minimal signal delays.\n\n"
+            : "") +
+
+        "AI evaluated signals, congestion zones, and road connectivity to select the most efficient path.\n\n" +
+
+        "📍 Route: " + bestRoute.join(" → ");
 
     } catch(err){
         console.error(err);

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🍊 Nagpur Smart Traffic AI</title>
+<title>Nagpur AI Traffic</title>
 
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -13,117 +13,51 @@
 
 <body>
 
-<div class="app">
+<!-- 🌍 MAP BACKGROUND -->
+<div id="map"></div>
 
-    <!-- ================= LEFT PANEL ================= -->
-    <div class="left-panel">
+<!-- 🔥 GLASS TOP BAR -->
+<div class="top-bar">
+    <div class="logo">🍊 Nagpur AI</div>
+    <div class="status">● Live System</div>
+</div>
 
-        <!-- BRAND -->
-        <div class="brand">
-            <div class="brand-top">
-                <h1>🍊 Nagpur AI</h1>
-                <span class="status-dot"></span>
-            </div>
-            <p class="brand-sub">Smart Traffic Intelligence System</p>
-        </div>
+<!-- 🔥 FLOATING CONTROL PANEL -->
+<div class="control-panel">
 
-        <!-- ROUTE CONTROL -->
-        <div class="section">
-            <h3>Route Control</h3>
+    <h2>AI Route Control</h2>
 
-            <div class="input-group">
-                <label>📍 Source</label>
-                <select id="source"></select>
-            </div>
+    <label>Source</label>
+    <select id="source"></select>
 
-            <div class="input-group">
-                <label>🎯 Destination</label>
-                <select id="destination"></select>
-            </div>
-        </div>
+    <label>Destination</label>
+    <select id="destination"></select>
 
-        <!-- TRAFFIC -->
-        <div class="section">
-            <h3>Traffic Density</h3>
+    <label>Traffic Density</label>
+    <input type="range" id="density" min="0" max="100" value="50">
+    <div id="densityValue">50%</div>
 
-            <input type="range" id="density" min="0" max="100" value="50">
-            <div id="densityValue">50%</div>
-        </div>
-
-        <!-- EMERGENCY -->
-        <div class="emergency-card">
-
-            <div class="emergency-header">
-                <span>🚑 Emergency Override</span>
-                <input type="checkbox" id="emergency">
-            </div>
-
-            <p>
-                AI prioritizes fastest route, clears signals, and minimizes delay during emergency conditions.
-            </p>
-
-        </div>
-
-        <!-- BUTTON -->
-        <button id="analyzeBtn">
-            ⚡ Start AI Routing
-        </button>
-
+    <div class="emergency">
+        🚑 Emergency Mode
+        <input type="checkbox" id="emergency">
     </div>
 
-    <!-- ================= RIGHT SIDE ================= -->
-    <div class="main">
+    <button id="analyzeBtn">⚡ Start AI Routing</button>
 
-        <!-- TOP BAR -->
-        <div class="top-bar">
-            <span class="live-indicator"></span>
-            <span>Live AI Traffic System</span>
-        </div>
+</div>
 
-        <!-- MAP -->
-        <div id="map"></div>
+<!-- 🔥 BOTTOM AI DOCK -->
+<div class="ai-dock">
 
-        <!-- AI PANEL -->
-        <div class="bottom-bar">
+    <div class="metrics">
+        <div><span>Traffic</span><h3 id="traffic">-</h3></div>
+        <div><span>ETA</span><h3 id="eta">-</h3></div>
+        <div><span>Mode</span><h3 id="mode">-</h3></div>
+        <div><span>Confidence</span><div class="bar"><div id="confidenceBar"></div></div></div>
+    </div>
 
-            <!-- METRICS -->
-            <div class="metrics-row">
-
-                <div class="metric">
-                    <span>🚦 Traffic</span>
-                    <h2 id="traffic">-</h2>
-                </div>
-
-                <div class="metric">
-                    <span>⏱ ETA</span>
-                    <h2 id="eta">-</h2>
-                </div>
-
-                <div class="metric">
-                    <span>⚙ Mode</span>
-                    <h2 id="mode">-</h2>
-                </div>
-
-                <div class="metric">
-                    <span>📊 Confidence</span>
-                    <div class="progress">
-                        <div id="confidenceBar"></div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- AI EXPLANATION -->
-            <div class="ai-box">
-                <div class="ai-title">🧠 AI Insight</div>
-
-                <div class="ai-text" id="aiReason">
-                    Waiting for analysis...
-                </div>
-            </div>
-
-        </div>
-
+    <div class="ai-text" id="aiReason">
+        🧠 AI ready...
     </div>
 
 </div>
