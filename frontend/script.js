@@ -11,9 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const modeText = document.getElementById("mode");
     const confidenceBar = document.getElementById("confidenceBar");
 
+    const button = document.getElementById("analyzeBtn");
+
+    // 🚀 Expanded Nagpur Locations
     const locations = [
         "Sitabuldi","Wardha Road","Airport","Railway Station",
-        "AIIMS","Wockhardt","Civil Lines"
+        "AIIMS","Wockhardt","Civil Lines","Dharampeth",
+        "Pratap Nagar","Hingna","Itwari","Gandhibagh"
     ];
 
     const coords = {
@@ -23,60 +27,110 @@ document.addEventListener("DOMContentLoaded", function () {
         "Railway Station":[21.145,79.088],
         "AIIMS":[21.118,79.050],
         "Wockhardt":[21.133,79.066],
-        "Civil Lines":[21.150,79.090]
+        "Civil Lines":[21.150,79.090],
+        "Dharampeth":[21.130,79.060],
+        "Pratap Nagar":[21.110,79.050],
+        "Hingna":[21.100,79.000],
+        "Itwari":[21.150,79.090],
+        "Gandhibagh":[21.140,79.080]
     };
 
-    locations.forEach(l=>{
-        source.innerHTML += `<option>${l}</option>`;
-        destination.innerHTML += `<option>${l}</option>`;
+    // Populate dropdowns
+    locations.forEach(loc => {
+        source.innerHTML += `<option>${loc}</option>`;
+        destination.innerHTML += `<option>${loc}</option>`;
     });
 
-    density.oninput = () => densityValue.innerText = density.value + "%";
+    // Density UI
+    density.oninput = function () {
+        densityValue.innerText = density.value + "%";
+    };
 
+    // 🚀 Map Init
     let map = L.map('map').setView([21.15,79.08],11);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
         .addTo(map);
 
-    let line;
+    map.zoomControl.setPosition('bottomright');
+
+    let routeLine;
 
     function getColor(traffic){
-        if(emergency.checked) return "red";
-        if(traffic==="High") return "red";
-        if(traffic==="Medium") return "orange";
-        return "green";
+        if (emergency.checked) return "#ef4444";
+        if (traffic === "High") return "#ef4444";
+        if (traffic === "Medium") return "#f59e0b";
+        return "#22c55e";
     }
 
-    document.getElementById("analyzeBtn").onclick = async function(){
+    function setTrafficColorUI(level) {
+        if (level === "High") trafficText.style.color = "#ef4444";
+        else if (level === "Medium") trafficText.style.color = "#f59e0b";
+        else trafficText.style.color = "#22c55e";
+    }
 
-        const res = await fetch("http://127.0.0.1:5000/analyze",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body: JSON.stringify({
-                source: source.value,
-                destination: destination.value,
-                density: density.value,
-                emergency: emergency.checked
-            })
-        });
+    // 🚀 MAIN ACTION
+    button.onclick = async function(){
 
-        const data = await res.json();
+        if (!source.value || !destination.value) {
+            alert("Please select both source and destination");
+            return;
+        }
 
-        if(line) map.removeLayer(line);
+        if (source.value === destination.value) {
+            alert("Source and destination cannot be same");
+            return;
+        }
 
-        line = L.polyline([coords[source.value], coords[destination.value]],{
-            color: getColor(data.traffic),
-            weight: emergency.checked ? 8 : 5
-        }).addTo(map);
+        button.innerText = "Analyzing...";
+        button.disabled = true;
 
-        map.fitBounds(line.getBounds());
+        try {
 
-        // UI Update
-        trafficText.innerText = data.traffic;
-        etaText.innerText = data.signal_time + " mins";
-        modeText.innerText = data.mode;
+            const res = await fetch("http://127.0.0.1:5000/analyze",{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    source: source.value,
+                    destination: destination.value,
+                    density: density.value,
+                    emergency: emergency.checked
+                })
+            });
 
-        confidenceBar.style.width = (data.confidence*100)+"%";
+            const data = await res.json();
+
+            // Remove old route
+            if(routeLine) map.removeLayer(routeLine);
+
+            // Draw new route
+            routeLine = L.polyline(
+                [coords[source.value], coords[destination.value]],
+                {
+                    color: getColor(data.traffic),
+                    weight: emergency.checked ? 8 : 5,
+                    opacity: 0.9
+                }
+            ).addTo(map);
+
+            map.fitBounds(routeLine.getBounds(), {padding:[50,50]});
+
+            // 🚀 UI UPDATE
+            trafficText.innerText = data.traffic || "Medium";
+            etaText.innerText = (data.signal_time || 20) + " min";
+            modeText.innerText = data.mode || "Normal";
+
+            confidenceBar.style.width = ((data.confidence || 0.8) * 100) + "%";
+
+            setTrafficColorUI(data.traffic);
+
+        } catch (err) {
+            console.error(err);
+            alert("⚠️ Backend not responding");
+        }
+
+        button.innerText = "Analyze Traffic";
+        button.disabled = false;
     };
 
 });
