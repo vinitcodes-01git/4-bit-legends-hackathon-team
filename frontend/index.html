@@ -15,16 +15,25 @@
 
 <body>
 
+<!-- ================= GLOBAL HEADER ================= -->
+<div class="topbar">
+    <div class="logo">🍊 Nagpur Smart Traffic AI</div>
+    <div class="status">
+        <span class="dot"></span>
+        AI System Active
+    </div>
+</div>
+
 <div class="app">
 
-    <!-- SIDEBAR -->
+    <!-- ================= SIDEBAR ================= -->
     <div class="sidebar">
 
-        <h1>🍊 Nagpur AI</h1>
+        <h1>Control Panel</h1>
 
         <!-- SOURCE -->
         <div class="input-group">
-            <label>Source</label>
+            <label>📍 Source</label>
             <select id="source">
                 <option value="">Select Source</option>
             </select>
@@ -32,7 +41,7 @@
 
         <!-- DESTINATION -->
         <div class="input-group">
-            <label>Destination</label>
+            <label>🎯 Destination</label>
             <select id="destination">
                 <option value="">Select Destination</option>
             </select>
@@ -40,7 +49,7 @@
 
         <!-- VEHICLE DENSITY -->
         <div class="input-group">
-            <label>Vehicle Density</label>
+            <label>🚗 Traffic Density</label>
             <input type="range" id="density" min="0" max="100" value="50">
             <div id="densityValue">50%</div>
         </div>
@@ -49,7 +58,7 @@
         <div class="emergency-box">
 
             <div class="emergency-header">
-                🚑 Emergency Priority System
+                🚑 Emergency Override
             </div>
 
             <label class="switch">
@@ -58,23 +67,23 @@
             </label>
 
             <p class="emergency-note">
-                Overrides traffic signals & gives fastest route
+                AI prioritizes fastest route & overrides signals
             </p>
 
         </div>
 
         <!-- BUTTON -->
-        <button id="analyzeBtn">🚀 Analyze Traffic</button>
+        <button id="analyzeBtn">🚀 Activate AI Routing</button>
 
     </div>
 
-    <!-- MAIN AREA -->
+    <!-- ================= MAIN ================= -->
     <div class="main">
 
         <!-- MAP -->
         <div id="map"></div>
 
-        <!-- DASHBOARD CARDS -->
+        <!-- ================= DASHBOARD ================= -->
         <div class="cards">
 
             <div class="card">
@@ -101,13 +110,13 @@
 
         </div>
 
-        <!-- 🧠 AI INTELLIGENCE PANEL -->
+        <!-- ================= AI PANEL ================= -->
         <div class="ai-panel">
 
-            <h3>🧠 AI Traffic Intelligence</h3>
+            <h3>🧠 AI Decision Engine</h3>
 
             <p id="aiReason">
-                Waiting for analysis...
+                System idle... waiting for input
             </p>
 
         </div>
@@ -116,10 +125,15 @@
 
 </div>
 
+<!-- ================= FOOTER ================= -->
+<div class="footer">
+    Smart City • Nagpur • AI Traffic Optimization System
+</div>
+
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Your Script -->
+<!-- Script -->
 <script src="script.js"></script>
 
 </body>

@@ -1,4 +1,47 @@
-/* RESET */
+/* ================= RESET ================= */
+/* TOPBAR */
+.topbar {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    background: rgba(2,6,23,0.9);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.logo {
+    font-weight: 600;
+    color: #fb923c;
+}
+
+.status {
+    font-size: 13px;
+    color: #22c55e;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #22c55e;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: #64748b;
+    background: #020617;
+}
+
+
+
 * {
     margin: 0;
     padding: 0;
@@ -7,37 +50,39 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: radial-gradient(circle at top, #0f172a, #020617);
+    background: radial-gradient(circle at top, #020617, #000000);
     color: #e5e7eb;
+    overflow: hidden;
 }
 
-/* LAYOUT */
+/* ================= LAYOUT ================= */
 .app {
     display: flex;
     height: 100vh;
-    overflow: hidden;
 }
 
 /* ================= SIDEBAR ================= */
 .sidebar {
     width: 320px;
     padding: 28px;
-    background: linear-gradient(180deg, #020617, #0f172a);
+    background: rgba(2,6,23,0.8);
+    backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255,255,255,0.05);
     display: flex;
     flex-direction: column;
-    backdrop-filter: blur(20px);
 }
 
+/* LOGO */
 .sidebar h1 {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
     margin-bottom: 30px;
-    color: #fb923c;
-    letter-spacing: 0.5px;
+    background: linear-gradient(90deg,#fb923c,#f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* INPUT GROUP */
+/* INPUT */
 .input-group {
     margin-bottom: 22px;
 }
@@ -49,24 +94,24 @@ label {
     display: block;
 }
 
-/* SELECT + RANGE */
+/* INPUT STYLE */
 select, input[type="range"] {
     width: 100%;
     padding: 12px;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 1px solid rgba(255,255,255,0.05);
-    background: #020617;
+    background: rgba(2,6,23,0.8);
     color: #e5e7eb;
     outline: none;
-    transition: 0.25s;
+    transition: all 0.3s ease;
 }
 
 select:hover {
     border-color: #fb923c;
-    box-shadow: 0 0 10px rgba(249,115,22,0.2);
+    box-shadow: 0 0 15px rgba(249,115,22,0.3);
 }
 
-/* SLIDER */
+/* SLIDER VALUE */
 #densityValue {
     margin-top: 6px;
     font-weight: 600;
@@ -76,10 +121,11 @@ select:hover {
 /* ================= EMERGENCY ================= */
 .emergency-box {
     margin-top: 25px;
-    padding: 16px;
-    border-radius: 16px;
-    background: linear-gradient(145deg,#0f172a,#020617);
-    border: 1px solid rgba(255,255,255,0.05);
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg,#0f172a,#020617);
+    border: 1px solid rgba(239,68,68,0.3);
+    box-shadow: 0 0 25px rgba(239,68,68,0.1);
 }
 
 .emergency-header {
@@ -102,9 +148,7 @@ select:hover {
     height: 26px;
 }
 
-.switch input {
-    display: none;
-}
+.switch input { display: none; }
 
 .slider {
     position: absolute;
@@ -130,7 +174,7 @@ select:hover {
 
 input:checked + .slider {
     background: #ef4444;
-    box-shadow: 0 0 14px rgba(239,68,68,0.6);
+    box-shadow: 0 0 20px rgba(239,68,68,0.7);
 }
 
 input:checked + .slider:before {
@@ -140,24 +184,24 @@ input:checked + .slider:before {
 /* ================= BUTTON ================= */
 button {
     margin-top: 25px;
-    padding: 14px;
-    border-radius: 14px;
+    padding: 15px;
+    border-radius: 16px;
     border: none;
     font-weight: 600;
+    font-size: 15px;
     background: linear-gradient(90deg,#f97316,#fb923c);
     color: white;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(249,115,22,0.4);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(249,115,22,0.5);
 }
 
 button:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
 }
 
 /* ================= MAIN ================= */
@@ -170,7 +214,8 @@ button:disabled {
 /* MAP */
 #map {
     flex: 1;
-    filter: contrast(1.05) brightness(0.95);
+    filter: contrast(1.1) brightness(0.9);
+    transition: all 0.3s ease;
 }
 
 /* ================= CARDS ================= */
@@ -179,33 +224,32 @@ button:disabled {
     grid-template-columns: repeat(4,1fr);
     gap: 16px;
     padding: 20px;
-    background: linear-gradient(180deg,#020617,#0f172a);
-    border-top: 1px solid rgba(255,255,255,0.05);
+    background: rgba(2,6,23,0.9);
 }
 
 /* CARD */
 .card {
-    background: rgba(15,23,42,0.6);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
+    background: rgba(15,23,42,0.7);
+    backdrop-filter: blur(15px);
+    border-radius: 18px;
     padding: 18px;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     border: 1px solid rgba(255,255,255,0.05);
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(249,115,22,0.4);
+    transform: translateY(-6px);
+    border-color: rgba(249,115,22,0.5);
+    box-shadow: 0 10px 30px rgba(249,115,22,0.2);
 }
 
-/* TEXT */
 .card span {
     font-size: 12px;
     color: #94a3b8;
 }
 
 .card h2 {
-    font-size: 22px;
+    font-size: 24px;
     margin-top: 6px;
     font-weight: 700;
 }
@@ -216,7 +260,6 @@ button:disabled {
     height: 8px;
     background: #020617;
     border-radius: 6px;
-    overflow: hidden;
 }
 
 #confidenceBar {
@@ -227,40 +270,26 @@ button:disabled {
     transition: width 0.4s ease;
 }
 
-/* ================= AI PANEL (🔥 NEW) ================= */
+/* ================= AI PANEL ================= */
 .ai-panel {
     padding: 20px;
     background: linear-gradient(135deg,#020617,#0f172a);
     border-top: 1px solid rgba(255,255,255,0.05);
-    animation: fadeIn 0.6s ease;
 }
 
 .ai-panel h3 {
-    margin-bottom: 10px;
     color: #38bdf8;
-    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 .ai-panel p {
     font-size: 14px;
     color: #cbd5f5;
     line-height: 1.6;
-    opacity: 0.9;
-}
-
-/* Subtle animation */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px);}
-    to { opacity: 1; transform: translateY(0);}
 }
 
 /* ================= RESPONSIVE ================= */
 @media(max-width: 900px){
-    .sidebar {
-        width: 260px;
-    }
-
-    .cards {
-        grid-template-columns: repeat(2,1fr);
-    }
+    .sidebar { width: 260px; }
+    .cards { grid-template-columns: repeat(2,1fr); }
 }

@@ -59,12 +59,12 @@ locations.forEach(loc => {
     destination.innerHTML += `<option>${loc}</option>`;
 });
 
-// ================= UI =================
+// UI
 density.oninput = () => {
     densityValue.innerText = density.value + "%";
 };
 
-// ================= MAP =================
+// MAP
 let map = L.map("map").setView([21.15,79.08], 12);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
@@ -72,7 +72,12 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
 
 map.zoomControl.setPosition("bottomright");
 
-// ================= TRAFFIC SIGNALS =================
+// ================= SIGNAL ICONS =================
+const signalIcon = (color) => L.divIcon({
+    className: '',
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};box-shadow:0 0 10px ${color}"></div>`
+});
+
 const signals = [
 [21.147,79.082],
 [21.133,79.066],
@@ -85,31 +90,26 @@ signals.forEach((s,i)=>{
     const colors = ["green","orange","red"];
     const color = colors[i % 3];
 
-    L.circleMarker(s,{
-        radius:8,
-        color:color,
-        fillOpacity:1
-    }).addTo(map)
-    .bindPopup(`🚦 Signal (${color.toUpperCase()})`);
+    L.marker(s,{icon: signalIcon(color)})
+    .addTo(map)
+    .bindPopup(`🚦 Smart Signal (${color})`);
 });
 
-// ================= HOSPITAL MARKERS =================
+// ================= HOSPITAL =================
 Object.keys(coords).forEach(loc => {
     if (loc.toLowerCase().includes("hospital") || loc.includes("AIIMS")) {
-        L.circleMarker(coords[loc], {
-            radius: 6,
-            color: "#3b82f6",
-            fillOpacity: 1
-        }).addTo(map).bindPopup("🏥 " + loc);
+        L.marker(coords[loc])
+        .addTo(map)
+        .bindPopup("🏥 " + loc);
     }
 });
 
 // ================= ROUTE =================
 let route;
+let vehicles = [];
 let animationInterval;
-let trafficDots = [];
 
-// Color logic
+// COLOR
 function getTrafficColor(level){
     if(emergency.checked) return "#ff0000";
     if(level==="High") return "#ef4444";
@@ -117,19 +117,31 @@ function getTrafficColor(level){
     return "#22c55e";
 }
 
-// 🚗 Traffic animation
-function animateTraffic(path){
-    trafficDots.forEach(dot => map.removeLayer(dot));
-    trafficDots = [];
+// 🚗 VEHICLE ANIMATION
+function spawnVehicles(path){
+    vehicles.forEach(v => map.removeLayer(v));
+    vehicles = [];
 
     path.forEach(coord => {
-        const dot = L.circleMarker(coord,{
-            radius:4,
+        const car = L.circleMarker(coord,{
+            radius:5,
             color:"#38bdf8"
         }).addTo(map);
 
-        trafficDots.push(dot);
+        vehicles.push(car);
     });
+
+    let index = 0;
+
+    animationInterval = setInterval(()=>{
+        vehicles.forEach((v,i)=>{
+            if(path[index+i]){
+                v.setLatLng(path[index+i]);
+            }
+        });
+        index++;
+        if(index > path.length) index = 0;
+    },300);
 }
 
 // ================= ANALYZE =================
@@ -140,12 +152,9 @@ btn.onclick = async function(){
         return;
     }
 
-    if(source.value === destination.value){
-        alert("Source & Destination cannot be same");
-        return;
-    }
+    document.body.style.filter = "brightness(0.8)";
 
-    btn.innerText = "⚡ AI Optimizing...";
+    btn.innerText = "⚡ AI MODE ACTIVE";
     btn.disabled = true;
 
     try {
@@ -164,60 +173,66 @@ btn.onclick = async function(){
 
         const data = await res.json();
 
-        // 🔥 USE AI ROUTE (IMPORTANT FIX)
         const bestRoute = data.route;
         const path = bestRoute.map(loc => coords[loc]).filter(Boolean);
 
-        // Remove old route
         if(route) map.removeLayer(route);
         if(animationInterval) clearInterval(animationInterval);
 
-        // Draw route
-        route = L.polyline(path,{
+        // CURVED PATH (adds realism)
+        const curvedPath = [];
+        for(let i=0;i<path.length-1;i++){
+            curvedPath.push(path[i]);
+            const mid = [
+                (path[i][0]+path[i+1][0])/2 + 0.002,
+                (path[i][1]+path[i+1][1])/2 - 0.002
+            ];
+            curvedPath.push(mid);
+        }
+        curvedPath.push(path[path.length-1]);
+
+        route = L.polyline(curvedPath,{
             color: getTrafficColor(data.traffic),
-            weight: emergency.checked ? 9 : 6,
-            dashArray: emergency.checked ? "10,10" : null
+            weight: emergency.checked ? 10 : 6,
+            opacity:0.9
         }).addTo(map);
 
-        map.flyToBounds(route.getBounds(), {duration:1.2});
+        map.flyToBounds(route.getBounds(), {duration:1.5});
 
-        // 🚨 Emergency blinking
+        // 🚨 EMERGENCY EFFECT
         if(emergency.checked){
-            let visible = true;
+            let glow = true;
             animationInterval = setInterval(()=>{
-                route.setStyle({opacity: visible ? 0.3 : 1});
-                visible = !visible;
-            },500);
+                route.setStyle({weight: glow ? 12 : 8});
+                glow = !glow;
+            },400);
         }
 
-        // 🚗 Traffic animation
-        animateTraffic(path);
+        // 🚗 VEHICLES
+        spawnVehicles(curvedPath);
 
-        // ================= UI =================
+        // UI
         trafficText.innerText = data.traffic;
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
 
         confidenceBar.style.width = (data.confidence * 100) + "%";
 
-        // Color
-        trafficText.style.color =
-            data.traffic === "High" ? "#ef4444" :
-            data.traffic === "Medium" ? "#f59e0b" : "#22c55e";
-
-        // ================= AI REASON =================
         aiReason.innerText =
-        "🧠 AI Decision:\n" +
+        "🧠 AI SYSTEM ACTIVE\n" +
         data.reason +
-        "\n\nRoute: " + bestRoute.join(" → ");
+        "\n\nOptimal Path: " + bestRoute.join(" → ");
 
     } catch(err){
         console.error(err);
         alert("Backend not responding");
     }
 
-    btn.innerText = "🚀 Analyze Traffic";
-    btn.disabled = false;
+    setTimeout(()=>{
+        document.body.style.filter = "brightness(1)";
+        btn.innerText = "🚀 Analyze Traffic";
+        btn.disabled = false;
+    },1000);
 };
 
 });
