@@ -117,7 +117,7 @@ function getTrafficColor(level){
     return "#22c55e";
 }
 
-// 🚗 Traffic simulation dots
+// 🚗 Traffic animation
 function animateTraffic(path){
     trafficDots.forEach(dot => map.removeLayer(dot));
     trafficDots = [];
@@ -145,7 +145,7 @@ btn.onclick = async function(){
         return;
     }
 
-    btn.innerText = "Analyzing...";
+    btn.innerText = "⚡ AI Optimizing...";
     btn.disabled = true;
 
     try {
@@ -164,11 +164,13 @@ btn.onclick = async function(){
 
         const data = await res.json();
 
+        // 🔥 USE AI ROUTE (IMPORTANT FIX)
+        const bestRoute = data.route;
+        const path = bestRoute.map(loc => coords[loc]).filter(Boolean);
+
         // Remove old route
         if(route) map.removeLayer(route);
         if(animationInterval) clearInterval(animationInterval);
-
-        const path = [coords[source.value], coords[destination.value]];
 
         // Draw route
         route = L.polyline(path,{
@@ -204,36 +206,17 @@ btn.onclick = async function(){
             data.traffic === "Medium" ? "#f59e0b" : "#22c55e";
 
         // ================= AI REASON =================
-        let reason = "";
-
-        if(data.traffic === "High"){
-            reason += "Heavy congestion detected. ";
-        } else if(data.traffic === "Medium"){
-            reason += "Moderate traffic conditions. ";
-        } else {
-            reason += "Smooth traffic flow. ";
-        }
-
-        if(density.value > 70){
-            reason += "High vehicle density increasing delay. ";
-        } else if(density.value < 30){
-            reason += "Low density allows faster movement. ";
-        }
-
-        if(emergency.checked){
-            reason += "🚑 Emergency mode activated: prioritizing fastest route. ";
-        }
-
-        reason += "AI optimized route using shortest time logic.";
-
-        aiReason.innerText = reason;
+        aiReason.innerText =
+        "🧠 AI Decision:\n" +
+        data.reason +
+        "\n\nRoute: " + bestRoute.join(" → ");
 
     } catch(err){
         console.error(err);
         alert("Backend not responding");
     }
 
-    btn.innerText = "Analyze Traffic";
+    btn.innerText = "🚀 Analyze Traffic";
     btn.disabled = false;
 };
 
