@@ -16,48 +16,52 @@ def home():
     return jsonify({
         "status": "Backend Running 🚀",
         "system": "Nagpur Smart Traffic AI",
-        "version": "2.0",
+        "version": "3.0",
         "features": [
             "Multi-route optimization",
             "Traffic prediction",
             "Signal-aware routing",
-            "Emergency prioritization"
+            "Emergency prioritization",
+            "AI reasoning engine"
         ]
     })
 
 
 # ================= HELPER: ENHANCE AI RESPONSE =================
 def enhance_ai_response(data, result):
-    """
-    Adds intelligence layer on top of base AI logic
-    """
 
-    traffic_level = int(data.get("vehicles", 0))
+    # ✅ SAFE TYPE CONVERSION (VERY IMPORTANT FIX)
+    try:
+        traffic_level = int(data.get("vehicles", 0))
+    except:
+        traffic_level = 0
+
     emergency = data.get("emergency", False)
 
-    # 🧠 Traffic classification
+    # ================= TRAFFIC CLASSIFICATION =================
     if traffic_level > 70:
         traffic = "High"
+        prediction = "High congestion expected in selected route"
     elif traffic_level > 40:
         traffic = "Medium"
+        prediction = "Moderate traffic flow expected"
     else:
         traffic = "Low"
+        prediction = "Smooth traffic conditions"
 
-    # 🚦 Simulate signal delays
+    # ================= SIGNAL SIMULATION =================
     signal_count = random.randint(3, 8)
     signal_delay = signal_count * random.randint(1, 3)
 
-    # 🚧 Accident probability
-    accident = random.random() < 0.3  # 30% chance
+    # ================= ACCIDENT SIMULATION =================
+    accident = random.random() < 0.3
 
-    # 🛣 Base route
+    # ================= ROUTES =================
     route = result.get("route", [])
-
-    # 🟢 Alternate route (simple variation)
     alt_route = list(route[::-1]) if len(route) > 1 else route
 
-    # 🧠 Score calculation
-    base_score = random.randint(10, 30)
+    # ================= ETA CALCULATION =================
+    base_score = random.randint(10, 25)
 
     if traffic == "High":
         base_score += 20
@@ -70,34 +74,40 @@ def enhance_ai_response(data, result):
         base_score += 15
 
     if emergency:
-        base_score -= 20  # prioritize speed
+        base_score -= 20
 
-    # ⏱ ETA calculation
     eta = max(5, base_score)
 
-    # 📊 Confidence
+    # ================= CONFIDENCE =================
     confidence = round(max(0.6, 1 - (traffic_level / 120)), 2)
 
-    # 🧠 Mode
+    # ================= MODE =================
     mode = "Emergency Priority" if emergency else "AI Smart Routing"
 
-    # 🧠 Reason
+    # ================= AI REASON (🔥 IMPROVED) =================
     reason = (
-        f"{traffic} traffic detected. "
-        f"{signal_count} signals affecting route. "
-        f"{'Accident detected. ' if accident else ''}"
-        f"{'Emergency routing enabled.' if emergency else ''}"
+        f"AI selected this route due to {traffic.lower()} traffic conditions. "
+        f"{signal_count} traffic signals detected along the path. "
+        f"{'Potential accident risk identified. ' if accident else ''}"
+        f"{'Emergency mode activated, prioritizing fastest route.' if emergency else 'Optimizing for minimal delay and smooth flow.'}"
     )
 
     return {
         "fastest_route": route,
         "low_traffic_route": alt_route,
-        "route": route,  # keep for compatibility
+        "route": route,
+
+        # UI DATA
         "traffic": traffic,
         "signal_time": eta,
         "confidence": confidence,
         "mode": mode,
+
+        # 🔥 NEW AI FIELDS
         "reason": reason,
+        "prediction": prediction,
+
+        # DEBUG / META
         "meta": {
             "signals": signal_count,
             "accident": accident,
@@ -114,14 +124,14 @@ def analyze_route():
 
         data = request.get_json()
 
-        # 🛑 Validate input
+        # ================= VALIDATION =================
         if not data:
             return jsonify({"error": "No data received"}), 400
 
         if not data.get("source") or not data.get("destination"):
             return jsonify({"error": "Missing source or destination"}), 400
 
-        # 🧠 Base AI logic
+        # ================= BASE AI =================
         base_result = analyze(data)
 
         if not base_result or "route" not in base_result:
@@ -129,10 +139,10 @@ def analyze_route():
                 "error": "AI failed to generate route"
             }), 500
 
-        # 🚀 Enhance intelligence
+        # ================= ENHANCED AI =================
         final_result = enhance_ai_response(data, base_result)
 
-        # ⏱ Add processing time
+        # ================= PERFORMANCE =================
         final_result["processing_time_ms"] = int((time.time() - start_time) * 1000)
 
         return jsonify(final_result)
