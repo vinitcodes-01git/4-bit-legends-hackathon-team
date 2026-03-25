@@ -7,14 +7,15 @@ body {
     overflow:hidden;
 }
 
-/* ================= MAP ================= */
+/* ================= MAP (🔥 FIXED) ================= */
 #map {
-    position:absolute;
-    width:100%;
-    height:100%;
-    z-index:1;
+    position: fixed;   /* ✅ FIXED */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;     /* 🔥 MOST IMPORTANT FIX */
+    z-index: 0;        /* behind UI */
 
-    /* ✅ FIXED: no washout */
     filter: none;
 }
 
@@ -92,7 +93,7 @@ body {
     color:#e5e7eb;
 }
 
-/* INPUT GROUP */
+/* ================= INPUT GROUP ================= */
 .input-group {
     display:flex;
     flex-direction:column;
@@ -104,21 +105,30 @@ label {
     color:#94a3b8;
 }
 
-/* INPUTS */
-select, input[type="range"] {
+/* ================= INPUTS (🔥 FIXED DROPDOWN) ================= */
+select {
     padding:8px;
     border-radius:8px;
-    border:1px solid rgba(255,255,255,0.05);
-    background:#020617;
-    color:white;
+    border:1px solid rgba(255,255,255,0.1);
+    background:#0f172a;   /* 🔥 FIX */
+    color:white;          /* 🔥 FIX */
     font-size:12px;
+}
+
+select option {
+    background:#0f172a;
+    color:white;
 }
 
 select:hover {
     border-color:#fb923c;
 }
 
-/* SLIDER */
+input[type="range"] {
+    padding:0;
+}
+
+/* ================= SLIDER ================= */
 #densityValue {
     font-size:11px;
     color:#fb923c;
@@ -189,7 +199,7 @@ button:hover {
     color:#e5e7eb;
 }
 
-/* AI SECTION */
+/* ================= AI SECTION ================= */
 .ai-section {
     background:rgba(15,23,42,0.45);
     padding:8px;
@@ -232,7 +242,7 @@ button:hover {
     max-height:140px;
 }
 
-/* METRICS */
+/* ================= METRICS ================= */
 .metrics {
     display:flex;
     gap:20px;
@@ -247,7 +257,7 @@ button:hover {
     font-size:14px;
 }
 
-/* BAR */
+/* ================= BAR ================= */
 .bar {
     width:90px;
     height:4px;
