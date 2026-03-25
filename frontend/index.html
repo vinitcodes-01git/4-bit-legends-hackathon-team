@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nagpur Smart Traffic AI</title>
+<title>🍊 Nagpur Smart Traffic AI</title>
 
 <link rel="stylesheet" href="style.css">
 
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 </head>
@@ -21,56 +22,78 @@
 
         <h1>🍊 Nagpur AI</h1>
 
+        <!-- SOURCE -->
         <div class="input-group">
             <label>Source</label>
-            <select id="source"></select>
+            <select id="source">
+                <option value="">Select Source</option>
+            </select>
         </div>
 
+        <!-- DESTINATION -->
         <div class="input-group">
             <label>Destination</label>
-            <select id="destination"></select>
+            <select id="destination">
+                <option value="">Select Destination</option>
+            </select>
         </div>
 
+        <!-- VEHICLE DENSITY -->
         <div class="input-group">
             <label>Vehicle Density</label>
             <input type="range" id="density" min="0" max="100" value="50">
             <div id="densityValue">50%</div>
         </div>
 
-        <div class="toggle">
-            <input type="checkbox" id="emergency">
-            <label>🚨 Emergency Mode</label>
+        <!-- 🚑 EMERGENCY SYSTEM -->
+        <div class="emergency-box">
+
+            <div class="emergency-header">
+                🚑 Emergency Priority System
+            </div>
+
+            <label class="switch">
+                <input type="checkbox" id="emergency">
+                <span class="slider"></span>
+            </label>
+
+            <p class="emergency-note">
+                Overrides traffic signals & gives fastest route
+            </p>
+
         </div>
 
-        <button id="analyzeBtn">Analyze Traffic</button>
+        <!-- BUTTON -->
+        <button id="analyzeBtn">🚀 Analyze Traffic</button>
 
     </div>
 
-    <!-- MAIN -->
+    <!-- MAIN AREA -->
     <div class="main">
 
+        <!-- MAP -->
         <div id="map"></div>
 
-        <!-- DASHBOARD -->
+        <!-- DASHBOARD CARDS -->
         <div class="cards">
 
             <div class="card">
-                <span>Traffic</span>
+                <span>🚦 Traffic Level</span>
                 <h2 id="traffic">-</h2>
             </div>
 
             <div class="card">
-                <span>ETA</span>
+                <span>⏱ ETA</span>
                 <h2 id="eta">-</h2>
             </div>
 
             <div class="card">
-                <span>Mode</span>
+                <span>⚙ Mode</span>
                 <h2 id="mode">-</h2>
             </div>
 
             <div class="card">
-                <span>Confidence</span>
+                <span>📊 Confidence</span>
                 <div class="progress">
                     <div id="confidenceBar"></div>
                 </div>
@@ -82,7 +105,10 @@
 
 </div>
 
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Your Script -->
 <script src="script.js"></script>
 
 </body>

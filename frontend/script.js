@@ -13,12 +13,15 @@ const confidenceBar = document.getElementById("confidenceBar");
 
 const btn = document.getElementById("analyzeBtn");
 
-// 🔥 FULL NAGPUR LOCATIONS
+// ================= LOCATIONS =================
 const locations = [
 "Sitabuldi","Wardha Road","Airport","Railway Station",
-"AIIMS","Wockhardt","Civil Lines","Dharampeth",
-"Pratap Nagar","Hingna","Itwari","Gandhibagh",
-"Manish Nagar","Besa","Mihan","Kalamna"
+"AIIMS Nagpur","Wockhardt Hospital","Seven Star Hospital",
+"KIMS Kingsway Hospital","Orange City Hospital","Care Hospital",
+"Alexis Hospital","Mayo Hospital","Daga Hospital",
+"Civil Lines","Dharampeth","Pratap Nagar",
+"Hingna","Itwari","Gandhibagh","Manish Nagar",
+"Besa","Mihan","Kalamna"
 ];
 
 const coords = {
@@ -26,8 +29,17 @@ const coords = {
 "Wardha Road":[21.133,79.066],
 "Airport":[21.092,79.047],
 "Railway Station":[21.145,79.088],
-"AIIMS":[21.118,79.050],
-"Wockhardt":[21.133,79.066],
+
+"AIIMS Nagpur":[21.118,79.050],
+"Wockhardt Hospital":[21.133,79.066],
+"Seven Star Hospital":[21.150,79.083],
+"KIMS Kingsway Hospital":[21.145,79.085],
+"Orange City Hospital":[21.130,79.070],
+"Care Hospital":[21.120,79.040],
+"Alexis Hospital":[21.110,79.060],
+"Mayo Hospital":[21.145,79.088],
+"Daga Hospital":[21.147,79.082],
+
 "Civil Lines":[21.150,79.090],
 "Dharampeth":[21.130,79.060],
 "Pratap Nagar":[21.110,79.050],
@@ -40,81 +52,148 @@ const coords = {
 "Kalamna":[21.166,79.083]
 };
 
-locations.forEach(l=>{
-    source.innerHTML += `<option>${l}</option>`;
-    destination.innerHTML += `<option>${l}</option>`;
+// Populate dropdowns
+locations.forEach(loc => {
+    source.innerHTML += `<option>${loc}</option>`;
+    destination.innerHTML += `<option>${loc}</option>`;
 });
 
-density.oninput = ()=> densityValue.innerText = density.value+"%";
+// ================= UI =================
+density.oninput = () => {
+    densityValue.innerText = density.value + "%";
+};
 
-// 🚀 MAP
-let map = L.map("map").setView([21.15,79.08],11);
+// ================= MAP =================
+let map = L.map("map").setView([21.15,79.08], 12);
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+.addTo(map);
 
-// 🚦 Traffic signals (static demo)
+map.zoomControl.setPosition("bottomright");
+
+// ================= TRAFFIC SIGNALS =================
 const signals = [
 [21.147,79.082],
 [21.133,79.066],
 [21.140,79.080],
-[21.110,79.050]
+[21.110,79.050],
+[21.150,79.090]
 ];
 
-signals.forEach(s=>{
+signals.forEach((s,i)=>{
+    const colors = ["green","orange","red"];
+    const color = colors[i % 3];
+
     L.circleMarker(s,{
-        radius:6,
-        color:"orange"
-    }).addTo(map).bindPopup("Traffic Signal");
+        radius:8,
+        color:color,
+        fillOpacity:1
+    }).addTo(map)
+    .bindPopup(`🚦 Signal (${color})`);
 });
 
-let route;
+// ================= HOSPITAL MARKERS =================
+Object.keys(coords).forEach(loc => {
+    if (loc.toLowerCase().includes("hospital") || loc.includes("AIIMS")) {
+        L.circleMarker(coords[loc], {
+            radius: 6,
+            color: "#3b82f6",
+            fillOpacity: 1
+        }).addTo(map).bindPopup("🏥 " + loc);
+    }
+});
 
-// 🚀 ANALYZE
+// ================= ROUTE =================
+let route;
+let animationInterval;
+
+// Color logic
+function getTrafficColor(level){
+    if(emergency.checked) return "#ff0000";
+    if(level==="High") return "#ef4444";
+    if(level==="Medium") return "#f59e0b";
+    return "#22c55e";
+}
+
+// ================= ANALYZE =================
 btn.onclick = async function(){
 
     if(!source.value || !destination.value){
-        alert("Select locations");
+        alert("Select both locations");
+        return;
+    }
+
+    if(source.value === destination.value){
+        alert("Source & Destination cannot be same");
         return;
     }
 
     btn.innerText = "Analyzing...";
     btn.disabled = true;
 
-    const res = await fetch("http://127.0.0.1:5000/analyze",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({
-            source: source.value,
-            destination: destination.value,
-            density: density.value,
-            emergency: emergency.checked
-        })
-    });
+    try {
 
-    const data = await res.json();
+        const res = await fetch("http://127.0.0.1:5000/analyze",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({
+                source: source.value,
+                destination: destination.value,
+                vehicles: density.value,
+                time: "morning",
+                emergency: emergency.checked
+            })
+        });
 
-    if(route) map.removeLayer(route);
+        const data = await res.json();
 
-    const color = emergency.checked ? "red" :
-        data.traffic==="High" ? "red" :
-        data.traffic==="Medium" ? "orange" : "green";
+        // Remove old route
+        if(route) map.removeLayer(route);
+        if(animationInterval) clearInterval(animationInterval);
 
-    route = L.polyline(
-        [coords[source.value], coords[destination.value]],
-        {
-            color: color,
-            weight: emergency.checked ? 8 : 5
+        // Draw route
+        route = L.polyline(
+            [coords[source.value], coords[destination.value]],
+            {
+                color: getTrafficColor(data.traffic),
+                weight: emergency.checked ? 9 : 6,
+                dashArray: emergency.checked ? "10,10" : null
+            }
+        ).addTo(map);
+
+        map.flyToBounds(route.getBounds(), {duration:1.2});
+
+        // 🚀 EMERGENCY ANIMATION (WOW)
+        if(emergency.checked){
+            let visible = true;
+            animationInterval = setInterval(()=>{
+                route.setStyle({
+                    opacity: visible ? 0.3 : 1
+                });
+                visible = !visible;
+            },500);
         }
-    ).addTo(map);
 
-    map.fitBounds(route.getBounds());
+        // ================= UI UPDATE =================
+        trafficText.innerText = data.traffic;
+        etaText.innerText = data.signal_time + " min";
+        modeText.innerText = data.mode;
 
-    // UI
-    trafficText.innerText = data.traffic;
-    etaText.innerText = data.signal_time+" min";
-    modeText.innerText = data.mode;
+        confidenceBar.style.width = (data.confidence * 100) + "%";
 
-    confidenceBar.style.width = (data.confidence*100)+"%";
+        // Traffic color
+        if(data.traffic === "High"){
+            trafficText.style.color = "#ef4444";
+        } else if(data.traffic === "Medium"){
+            trafficText.style.color = "#f59e0b";
+        } else {
+            trafficText.style.color = "#22c55e";
+        }
+
+    } catch(err){
+        console.error(err);
+        alert("Backend not responding");
+    }
 
     btn.innerText = "Analyze Traffic";
     btn.disabled = false;
