@@ -3,19 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Traffic AI</title>
+
+<title>Nagpur Smart Traffic AI</title>
 
 <link rel="stylesheet" href="style.css">
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 </head>
+
 <body>
 
 <div class="app">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h1>Smart Traffic AI</h1>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <h1>🍊 Nagpur AI</h1>
 
         <div class="input-group">
             <label>Source</label>
@@ -30,22 +34,24 @@
         <div class="input-group">
             <label>Vehicle Density</label>
             <input type="range" id="density" min="0" max="100" value="50">
-            <span id="densityValue">50%</span>
+            <div id="densityValue">50%</div>
         </div>
 
-        <div class="input-group checkbox">
+        <div class="toggle">
             <input type="checkbox" id="emergency">
-            <label>Emergency Mode</label>
+            <label>🚨 Emergency Mode</label>
         </div>
 
         <button id="analyzeBtn">Analyze Traffic</button>
-    </aside>
 
-    <!-- Main -->
-    <main class="main">
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
 
         <div id="map"></div>
 
+        <!-- DASHBOARD -->
         <div class="cards">
 
             <div class="card">
@@ -72,7 +78,7 @@
 
         </div>
 
-    </main>
+    </div>
 
 </div>
 
