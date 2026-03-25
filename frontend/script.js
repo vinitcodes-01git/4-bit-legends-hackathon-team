@@ -135,78 +135,110 @@ function App() {
     const isValid = formData.source && formData.destination;
 
     return (
-        React.createElement('div', { className: 'container' },
+    React.createElement('div', { className: 'container' },
 
-            // HEADER
-            React.createElement('div', { className: 'header' },
-                React.createElement('h1', null, '🗺️ Nagpur Smart Traffic Dashboard'),
-                React.createElement('p', null, 'AI-powered Traffic Management System')
-            ),
+        // HEADER
+        React.createElement('div', { className: 'header' },
+            React.createElement('h1', null, '🗺️ Smart Traffic AI'),
+            React.createElement('p', null, 'Nagpur Intelligent Traffic Optimization System')
+        ),
 
-            // MAIN
-            React.createElement('div', { className: 'main-content' },
+        // MAIN GRID
+        React.createElement('div', { className: 'main-content' },
 
-                // LEFT PANEL
-                React.createElement('div', { className: 'panel' },
-                    React.createElement('h2', null, 'Control Panel'),
+            // LEFT PANEL
+            React.createElement('div', { className: 'panel' },
 
-                    React.createElement('select', {
-                        name: 'source',
-                        value: formData.source,
-                        onChange: handleChange
-                    },
-                        React.createElement('option', { value: '' }, 'Select Source'),
-                        nagpurLocations.map(loc =>
-                            React.createElement('option', { key: loc, value: loc }, loc)
-                        )
-                    ),
+                React.createElement('h2', null, '🚦 Input'),
 
-                    React.createElement('select', {
-                        name: 'destination',
-                        value: formData.destination,
-                        onChange: handleChange
-                    },
-                        React.createElement('option', { value: '' }, 'Select Destination'),
-                        nagpurLocations.map(loc =>
-                            React.createElement('option', { key: loc, value: loc }, loc)
-                        )
-                    ),
-
-                    React.createElement('button', {
-                        onClick: analyzeTraffic,
-                        disabled: loading || !isValid,
-                        className: 'analyze-btn'
-                    }, loading ? "Analyzing..." : "Analyze Traffic")
+                React.createElement('label', null, 'Source'),
+                React.createElement('select', {
+                    name: 'source',
+                    value: formData.source,
+                    onChange: handleChange
+                },
+                    React.createElement('option', { value: '' }, 'Select Source'),
+                    nagpurLocations.map(loc =>
+                        React.createElement('option', { key: loc, value: loc }, loc)
+                    )
                 ),
 
-                // RIGHT PANEL
-                React.createElement('div', { className: 'panel' },
+                React.createElement('label', null, 'Destination'),
+                React.createElement('select', {
+                    name: 'destination',
+                    value: formData.destination,
+                    onChange: handleChange
+                },
+                    React.createElement('option', { value: '' }, 'Select Destination'),
+                    nagpurLocations.map(loc =>
+                        React.createElement('option', { key: loc, value: loc }, loc)
+                    )
+                ),
 
-                    results ?
-                    React.createElement('div', null,
-
-                        React.createElement('div', {
-                            ref: mapRef,
-                            style: { height: '250px', marginBottom: '20px' }
-                        }),
-
-                        React.createElement('h3', null, `Traffic: ${results.trafficLevel}`),
-                        React.createElement('p', null, `Route: ${results.route}`),
-                        React.createElement('p', null, `ETA: ${results.eta}`),
-                        React.createElement('p', null, `Mode: ${results.mode}`),
-                        React.createElement('p', null, `Confidence: ${results.confidence}%`),
-                        React.createElement('p', null, `Insight: ${results.insight}`)
-
-                    ) :
-                    React.createElement('p', null, 'Run analysis to see results')
-                )
+                React.createElement('button', {
+                    onClick: analyzeTraffic,
+                    disabled: loading || !isValid,
+                    className: 'analyze-btn'
+                }, loading ? "Analyzing..." : "🚀 Analyze Traffic")
             ),
 
-            React.createElement('div', { className: 'privacy-footer' },
-                '🔒 Privacy-first system | No user data stored'
+            // RIGHT PANEL
+            React.createElement('div', { className: 'panel' },
+
+                results ?
+                React.createElement('div', null,
+
+                    // MAP
+                    React.createElement('div', {
+                        ref: mapRef,
+                        className: 'map-container'
+                    }),
+
+                    // RESULTS GRID
+                    React.createElement('div', { className: 'results-grid' },
+
+                        React.createElement('div', { className: 'result-card' },
+                            React.createElement('h3', null, 'Traffic'),
+                            React.createElement('div', { className: 'result-value' }, results.trafficLevel)
+                        ),
+
+                        React.createElement('div', { className: 'result-card' },
+                            React.createElement('h3', null, 'ETA'),
+                            React.createElement('div', { className: 'result-value' }, results.eta)
+                        ),
+
+                        React.createElement('div', { className: 'result-card' },
+                            React.createElement('h3', null, 'Mode'),
+                            React.createElement('div', { className: 'result-value' }, results.mode)
+                        ),
+
+                        React.createElement('div', { className: 'result-card' },
+                            React.createElement('h3', null, 'Confidence'),
+                            React.createElement('div', { className: 'result-value' }, `${results.confidence}%`)
+                        )
+                    ),
+
+                    // ROUTE + INSIGHT
+                    React.createElement('div', { className: 'ai-insight' },
+                        React.createElement('p', null, `Route: ${results.route}`),
+                        React.createElement('p', null, `Insight: ${results.insight}`)
+                    )
+
+                ) :
+                React.createElement('div', {
+                    style: { textAlign: 'center', padding: '80px', color: '#888' }
+                },
+                    React.createElement('h3', null, '🚦 Ready'),
+                    React.createElement('p', null, 'Select route and analyze')
+                )
             )
+        ),
+
+        React.createElement('div', { className: 'privacy-footer' },
+            '🔒 Privacy-first | No data stored'
         )
-    );
+    )
+);
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
