@@ -4,105 +4,104 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🍊 Nagpur Smart Traffic AI</title>
+<title>Nagpur Smart Traffic AI</title>
 
 <link rel="stylesheet" href="style.css">
+
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
 
 </head>
 
 <body>
 
-<!-- 🌍 MAP BACKGROUND -->
+<!-- ================= MAP ================= -->
 <div id="map"></div>
 
-<!-- 🔥 TOP GLASS BAR -->
+<!-- ================= TOP BAR ================= -->
 <div class="top-bar">
-    <div class="logo">🍊 Nagpur AI</div>
-    <div class="status">🟢 AI System Active</div>
+    <div class="logo">Nagpur Traffic AI</div>
+    <div class="status">System Active</div>
 </div>
 
-<!-- 🔥 FLOATING CONTROL PANEL -->
+<!-- ================= CONTROL PANEL ================= -->
 <div class="control-panel">
 
-    <h2>⚡ AI Route Control</h2>
+    <h2>Route Control</h2>
 
     <div class="input-group">
-        <label>📍 Source</label>
+        <label>Source</label>
         <select id="source"></select>
     </div>
 
     <div class="input-group">
-        <label>🎯 Destination</label>
+        <label>Destination</label>
         <select id="destination"></select>
     </div>
 
     <div class="input-group">
-        <label>🚗 Traffic Density</label>
+        <label>Traffic Density</label>
         <input type="range" id="density" min="0" max="100" value="50">
         <div id="densityValue">50%</div>
     </div>
 
-    <!-- 🚑 EMERGENCY -->
     <div class="emergency-box">
-        <span>🚑 Emergency Override</span>
+        <span>Emergency Mode</span>
         <input type="checkbox" id="emergency">
     </div>
 
-    <button id="analyzeBtn">⚡ Start AI Routing</button>
+    <button id="analyzeBtn">Analyze Route</button>
 
 </div>
 
-<!-- 🔥 AI INTELLIGENCE PANEL (RIGHT SIDE) -->
+<!-- ================= AI SIDE PANEL ================= -->
 <div class="ai-panel">
 
-    <h3>🧠 AI Intelligence</h3>
+    <h3>AI Insights</h3>
 
-    <!-- 🔮 Prediction -->
     <div class="ai-section">
-        <span>🔮 Prediction</span>
-        <p id="predictionText">Waiting...</p>
+        <span>Traffic Prediction</span>
+        <p id="predictionText">Waiting for input</p>
     </div>
 
-    <!-- 💡 Suggestions -->
     <div class="ai-section">
-        <span>💡 Smart Suggestions</span>
-        <p id="suggestionText">Waiting...</p>
+        <span>Route Suggestions</span>
+        <p id="suggestionText">Waiting for analysis</p>
     </div>
 
-    <!-- 🛣 Route Type -->
     <div class="ai-section">
-        <span>🛣 Routes</span>
+        <span>Routing Strategy</span>
         <p>
-            🔴 Fastest Route<br>
-            🟢 Low Traffic Route
+            Fastest Route (Red)<br>
+            Alternate Route (Green)
         </p>
     </div>
 
 </div>
 
-<!-- 🔥 BOTTOM AI DOCK -->
+<!-- ================= BOTTOM PANEL ================= -->
 <div class="ai-dock">
 
     <div class="metrics">
 
         <div class="metric">
-            <span>🚦 Traffic</span>
+            <span>Traffic</span>
             <h3 id="traffic">-</h3>
         </div>
 
         <div class="metric">
-            <span>⏱ ETA</span>
+            <span>ETA</span>
             <h3 id="eta">-</h3>
         </div>
 
         <div class="metric">
-            <span>⚙ Mode</span>
+            <span>Mode</span>
             <h3 id="mode">-</h3>
         </div>
 
         <div class="metric">
-            <span>📊 Confidence</span>
+            <span>Confidence</span>
             <div class="bar">
                 <div id="confidenceBar"></div>
             </div>
@@ -110,14 +109,15 @@
 
     </div>
 
-    <!-- 🤖 AI EXPLANATION -->
     <div class="ai-text" id="aiReason">
-        🧠 AI system ready. Waiting for input...
+        System ready. Select route and analyze.
     </div>
 
 </div>
 
+<!-- ================= SCRIPTS ================= -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 <script src="script.js"></script>
 
 </body>

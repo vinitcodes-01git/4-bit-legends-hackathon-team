@@ -14,43 +14,42 @@ body {
     height:100%;
     z-index:1;
 
-    /* 🔥 FIX: make routes visible */
-    filter: brightness(1) contrast(1.1);
+    /* clearer map */
+    filter: brightness(1.05) contrast(1.1);
 }
 
 /* ================= TOP BAR ================= */
 .top-bar {
     position:absolute;
-    top:20px;
+    top:18px;
     left:50%;
     transform:translateX(-50%);
 
-    width:92%;
-    padding:14px 22px;
+    width:90%;
+    padding:12px 18px;
 
     display:flex;
     justify-content:space-between;
     align-items:center;
 
-    background:rgba(2,6,23,0.6);
-    backdrop-filter:blur(25px);
-    border-radius:18px;
+    background:rgba(2,6,23,0.55);
+    backdrop-filter:blur(22px);
+    border-radius:14px;
 
     border:1px solid rgba(255,255,255,0.05);
 
     z-index:20;
-    animation:fadeIn 0.6s ease;
 }
 
 .logo {
-    font-weight:700;
+    font-weight:600;
     color:#fb923c;
-    font-size:18px;
+    font-size:16px;
 }
 
 .status {
     color:#22c55e;
-    font-size:13px;
+    font-size:12px;
     display:flex;
     align-items:center;
     gap:6px;
@@ -58,60 +57,71 @@ body {
 
 .status::before {
     content:"";
-    width:8px;
-    height:8px;
+    width:6px;
+    height:6px;
     background:#22c55e;
     border-radius:50%;
-    box-shadow:0 0 10px #22c55e;
-    animation:pulse 1.5s infinite;
+    box-shadow:0 0 8px #22c55e;
 }
 
 /* ================= CONTROL PANEL ================= */
 .control-panel {
     position:absolute;
-    top:100px;
-    left:30px;
+    top:90px;
+    left:25px;
 
-    width:280px;
-    padding:20px;
+    width:260px;
+    padding:16px;
 
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:10px;
 
-    background:rgba(2,6,23,0.55); /* 🔥 lighter */
+    background:rgba(2,6,23,0.55);
     backdrop-filter:blur(20px);
-    border-radius:18px;
+    border-radius:14px;
 
     border:1px solid rgba(255,255,255,0.05);
 
     z-index:20;
 }
 
+.control-panel h2 {
+    font-size:15px;
+    font-weight:500;
+    color:#e5e7eb;
+}
+
 /* INPUT GROUP */
 .input-group {
     display:flex;
     flex-direction:column;
-    gap:6px;
+    gap:4px;
 }
 
 label {
-    font-size:12px;
+    font-size:11px;
     color:#94a3b8;
 }
 
 /* INPUTS */
 select, input[type="range"] {
-    padding:10px;
-    border-radius:10px;
+    padding:8px;
+    border-radius:8px;
     border:1px solid rgba(255,255,255,0.05);
     background:#020617;
     color:white;
-    outline:none;
+    font-size:12px;
 }
 
 select:hover {
     border-color:#fb923c;
+}
+
+/* SLIDER */
+#densityValue {
+    font-size:11px;
+    color:#fb923c;
 }
 
 /* ================= EMERGENCY ================= */
@@ -120,157 +130,154 @@ select:hover {
     justify-content:space-between;
     align-items:center;
 
-    padding:10px;
-    border-radius:10px;
+    padding:8px;
+    border-radius:8px;
 
-    background:rgba(239,68,68,0.1);
-    border:1px solid rgba(239,68,68,0.3);
+    background:rgba(239,68,68,0.08);
+    border:1px solid rgba(239,68,68,0.2);
 
     color:#ef4444;
+    font-size:12px;
 }
 
 /* ================= BUTTON ================= */
 button {
-    margin-top:10px;
-    padding:12px;
+    margin-top:6px;
+    padding:10px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
 
     background:linear-gradient(90deg,#f97316,#fb923c);
     color:white;
-    font-weight:600;
+    font-weight:500;
+    font-size:13px;
 
     cursor:pointer;
-    transition:0.25s;
+    transition:0.2s;
 }
 
 button:hover {
-    transform:translateY(-2px);
-    box-shadow:0 8px 20px rgba(249,115,22,0.4);
+    box-shadow:0 6px 18px rgba(249,115,22,0.3);
 }
 
 /* ================= AI SIDE PANEL ================= */
 .ai-panel {
     position:absolute;
-    top:100px;
-    right:30px;
+    top:90px;
+    right:25px;
 
-    width:250px;
-    padding:16px;
-
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-
-    background:rgba(2,6,23,0.5); /* 🔥 lighter */
-    backdrop-filter:blur(20px);
-    border-radius:18px;
-
-    border:1px solid rgba(255,255,255,0.05);
-
-    z-index:20;
-}
-
-/* AI SECTION */
-.ai-section {
-    background:rgba(15,23,42,0.5);
-    padding:10px;
-    border-radius:10px;
-}
-
-.ai-section span {
-    font-size:11px;
-    color:#94a3b8;
-}
-
-.ai-section p {
-    font-size:12px;
-}
-
-/* ================= AI DOCK (🔥 FIXED) ================= */
-.ai-dock {
-    position:absolute;
-    bottom:15px;
-    left:50%;
-    transform:translateX(-50%);
-
-    width:88%;
-    padding:16px;
-
-    background:rgba(2,6,23,0.5); /* 🔥 transparent */
-    backdrop-filter:blur(15px);
-
-    border-radius:18px;
-    border:1px solid rgba(255,255,255,0.05);
+    width:240px;
+    padding:14px;
 
     display:flex;
     flex-direction:column;
     gap:10px;
 
+    background:rgba(2,6,23,0.5);
+    backdrop-filter:blur(20px);
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    z-index:20;
+}
+
+.ai-panel h3 {
+    font-size:14px;
+    font-weight:500;
+    color:#e5e7eb;
+}
+
+/* AI SECTION */
+.ai-section {
+    background:rgba(15,23,42,0.45);
+    padding:8px;
+    border-radius:8px;
+}
+
+.ai-section span {
+    font-size:10px;
+    color:#94a3b8;
+}
+
+.ai-section p {
+    font-size:11px;
+    line-height:1.4;
+    margin-top:4px;
+}
+
+/* ================= AI DOCK ================= */
+.ai-dock {
+    position:absolute;
+    bottom:12px;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:86%;
+    padding:14px;
+
+    background:rgba(2,6,23,0.5);
+    backdrop-filter:blur(18px);
+
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.05);
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
     z-index:20;
 
-    max-height:160px; /* 🔥 FIX */
-    overflow:hidden;
+    max-height:140px;
 }
 
 /* METRICS */
 .metrics {
     display:flex;
-    gap:25px;
+    gap:20px;
 }
 
 .metric span {
-    font-size:11px;
+    font-size:10px;
     color:#94a3b8;
 }
 
 .metric h3 {
-    font-size:16px;
+    font-size:14px;
 }
 
 /* BAR */
 .bar {
-    width:100px;
-    height:5px;
+    width:90px;
+    height:4px;
     background:#020617;
-    border-radius:5px;
+    border-radius:4px;
 }
 
 #confidenceBar {
-    height:5px;
+    height:4px;
     width:0%;
     background:#22c55e;
 }
 
-/* ================= AI TEXT (🔥 FIXED) ================= */
+/* ================= AI TEXT ================= */
 .ai-text {
-    color:#38bdf8;
-    font-size:12px;
-    line-height:1.5;
+    font-size:11px;
+    line-height:1.4;
 
-    background:rgba(15,23,42,0.5);
-    padding:10px;
-    border-radius:10px;
+    color:#cbd5f5;
 
-    max-height:70px;
+    background:rgba(15,23,42,0.4);
+    padding:8px;
+    border-radius:8px;
+
+    max-height:55px;
     overflow-y:auto;
 }
 
 /* ================= ROUTE VISIBILITY ================= */
 .leaflet-interactive {
     filter: drop-shadow(0 0 6px rgba(0,0,0,0.7));
-}
-
-/* ================= ANIMATIONS ================= */
-@keyframes pulse {
-    0%{opacity:1}
-    50%{opacity:0.4}
-    100%{opacity:1}
-}
-
-@keyframes fadeIn {
-    from {opacity:0; transform:translateY(10px);}
-    to {opacity:1; transform:translateY(0);}
 }
 
 /* ================= RESPONSIVE ================= */
@@ -282,6 +289,6 @@ button:hover {
 
     .metrics {
         flex-wrap:wrap;
-        gap:15px;
+        gap:12px;
     }
 }
