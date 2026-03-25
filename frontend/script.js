@@ -18,9 +18,12 @@ const suggestionText = document.getElementById("suggestionText");
 
 const btn = document.getElementById("analyzeBtn");
 
-// ================= LOCATIONS =================
+// ================= ALL LOCATIONS (RESTORED) =================
 const locations = [
 "Sitabuldi","Wardha Road","Airport","Railway Station",
+"AIIMS Nagpur","Wockhardt Hospital","Seven Star Hospital",
+"KIMS Kingsway Hospital","Orange City Hospital","Care Hospital",
+"Alexis Hospital","Mayo Hospital","Daga Hospital",
 "Civil Lines","Dharampeth","Pratap Nagar",
 "Hingna","Itwari","Gandhibagh","Manish Nagar",
 "Besa","Mihan","Kalamna"
@@ -31,6 +34,15 @@ const coords = {
 "Wardha Road":[21.133,79.066],
 "Airport":[21.092,79.047],
 "Railway Station":[21.145,79.088],
+"AIIMS Nagpur":[21.118,79.050],
+"Wockhardt Hospital":[21.133,79.066],
+"Seven Star Hospital":[21.150,79.083],
+"KIMS Kingsway Hospital":[21.145,79.085],
+"Orange City Hospital":[21.130,79.070],
+"Care Hospital":[21.120,79.040],
+"Alexis Hospital":[21.110,79.060],
+"Mayo Hospital":[21.145,79.088],
+"Daga Hospital":[21.147,79.082],
 "Civil Lines":[21.150,79.090],
 "Dharampeth":[21.130,79.060],
 "Pratap Nagar":[21.110,79.050],
@@ -57,7 +69,7 @@ density.oninput = () => {
 // ================= MAP =================
 let map = L.map("map",{zoomControl:false}).setView([21.1458,79.0882],13);
 
-// ✅ FIXED MAP (REAL + CLEAR)
+// ✅ CLEAN + CLEAR MAP
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap'
 }).addTo(map);
@@ -67,19 +79,16 @@ L.control.zoom({position:"bottomright"}).addTo(map);
 // ================= SIGNALS =================
 function signalIcon(color){
     return L.divIcon({
-        html:`<div style="
-            width:10px;height:10px;
-            border-radius:50%;
-            background:${color};
-            box-shadow:0 0 6px ${color};
-        "></div>`
+        html:`<div style="width:10px;height:10px;border-radius:50%;
+        background:${color};box-shadow:0 0 6px ${color};"></div>`
     });
 }
 
-// dynamic signals
+// realistic signals
 [
 [21.147,79.082],[21.133,79.066],[21.140,79.080],
-[21.110,79.050],[21.150,79.090]
+[21.110,79.050],[21.150,79.090],[21.145,79.085],
+[21.138,79.060],[21.128,79.072]
 ].forEach(loc=>{
     let state=0;
     const colors=["#22c55e","#f59e0b","#ef4444"];
@@ -102,81 +111,14 @@ function signalIcon(color){
 // ================= ROUTES =================
 let route1, route2;
 let startMarker, endMarker;
-let vehicles=[];
-let animationInterval;
 
-// ================= MARKERS =================
+// marker style
 function markerIcon(label,color){
     return L.divIcon({
-        html:`<div style="
-            background:${color};
-            color:white;
-            padding:4px 6px;
-            border-radius:6px;
-            font-size:10px;
-            font-weight:600;
-        ">${label}</div>`
+        html:`<div style="background:${color};color:white;
+        padding:4px 6px;border-radius:6px;font-size:10px;font-weight:600">
+        ${label}</div>`
     });
-}
-
-// ================= VEHICLE ANIMATION =================
-function animateVehicles(path){
-
-    if(animationInterval) clearInterval(animationInterval);
-
-    vehicles.forEach(v=>map.removeLayer(v));
-    vehicles=[];
-
-    const dots = path.map(p =>
-        L.circleMarker(p,{
-            radius:3,
-            color:"#38bdf8"
-        }).addTo(map)
-    );
-
-    vehicles = dots;
-
-    let t = 0;
-
-    animationInterval = setInterval(()=>{
-        t += 0.05;
-
-        vehicles.forEach((v,i)=>{
-            const idx = Math.floor((t + i) % path.length);
-            v.setLatLng(path[idx]);
-        });
-
-    },120);
-}
-
-// ================= AI TEXT =================
-function typeText(el,text){
-    el.innerText="";
-    let i=0;
-
-    const interval=setInterval(()=>{
-        el.innerText+=text[i] || "";
-        i++;
-        if(i>=text.length) clearInterval(interval);
-    },12);
-}
-
-// ================= SUGGESTIONS =================
-function generateSuggestions(route,density,emergency){
-
-    const s=[];
-
-    if(density>70) s.push("Heavy traffic → avoid main roads");
-    else if(density>40) s.push("Moderate traffic → expect delays");
-    else s.push("Smooth traffic flow");
-
-    if(route.includes("Gandhibagh")) s.push("Gandhibagh congestion detected");
-    if(route.includes("Wardha Road")) s.push("Wardha Road faster route");
-    if(route.includes("Civil Lines")) s.push("Civil Lines smoother traffic");
-
-    if(emergency) s.push("Emergency priority enabled");
-
-    return s;
 }
 
 // ================= ANALYZE =================
@@ -190,11 +132,12 @@ btn.onclick = async function(){
     btn.innerText="Analyzing...";
     btn.disabled=true;
 
-    typeText(aiReason,"Analyzing traffic...");
+    aiReason.innerText="Analyzing traffic...";
 
     try {
 
-        const res = await fetch("http://127.0.0.1:5000/analyze",{
+        // ✅ FIXED BACKEND URL
+        const res = await fetch("http://localhost:5000/analyze",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
@@ -205,10 +148,12 @@ btn.onclick = async function(){
             })
         });
 
+        if(!res.ok) throw new Error("Server error");
+
         const data = await res.json();
 
-        const bestRoute = data.route;
-        const altRoute = [...bestRoute].reverse();
+        const bestRoute = data.fastest_route || data.route;
+        const altRoute = data.low_traffic_route || [...bestRoute].reverse();
 
         // CLEAR OLD
         if(route1) map.removeControl(route1);
@@ -216,7 +161,7 @@ btn.onclick = async function(){
         if(startMarker) map.removeLayer(startMarker);
         if(endMarker) map.removeLayer(endMarker);
 
-        // ROUTES
+        // 🔴 FASTEST ROUTE
         route1 = L.Routing.control({
             waypoints: bestRoute.map(l=>L.latLng(...coords[l])),
             lineOptions:{styles:[{color:"#ef4444",weight:6}]},
@@ -224,6 +169,7 @@ btn.onclick = async function(){
             addWaypoints:false
         }).addTo(map);
 
+        // 🟢 ALT ROUTE
         route2 = L.Routing.control({
             waypoints: altRoute.map(l=>L.latLng(...coords[l])),
             lineOptions:{styles:[{color:"#22c55e",weight:4,dashArray:"6,6"}]},
@@ -235,20 +181,12 @@ btn.onclick = async function(){
         const start = coords[bestRoute[0]];
         const end = coords[bestRoute.at(-1)];
 
-        startMarker = L.marker(start,{
-            icon:markerIcon("A","#3b82f6")
-        }).addTo(map);
-
-        endMarker = L.marker(end,{
-            icon:markerIcon("B","#ef4444")
-        }).addTo(map);
+        startMarker = L.marker(start,{icon:markerIcon("A","#3b82f6")}).addTo(map);
+        endMarker = L.marker(end,{icon:markerIcon("B","#ef4444")}).addTo(map);
 
         setTimeout(()=>{
             map.fitBounds(route1.getBounds(),{padding:[50,50]});
         },400);
-
-        // VEHICLES
-        animateVehicles(bestRoute.map(l=>coords[l]));
 
         // ================= UI =================
         trafficText.innerText = data.traffic;
@@ -263,14 +201,16 @@ btn.onclick = async function(){
 
         predictionText.innerText = prediction;
 
-        const smartSuggestions = generateSuggestions(bestRoute,density.value,emergency.checked);
-        suggestionText.innerText = "• " + smartSuggestions.join("\n• ");
+        suggestionText.innerText =
+        "• Route optimized based on traffic\n" +
+        "• Alternate path available\n" +
+        (emergency.checked ? "• Emergency priority enabled" : "• Normal routing");
 
-        typeText(aiReason,data.reason || "AI selected best route based on traffic.");
+        aiReason.innerText = data.reason;
 
     } catch(err){
         console.error(err);
-        alert("Backend not running ❌");
+        alert("Backend not connected ❌");
     }
 
     btn.innerText="Analyze Route";
