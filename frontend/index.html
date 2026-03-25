@@ -13,66 +13,99 @@
 
 <body>
 
-<!-- ================= APP WRAPPER ================= -->
 <div class="app">
 
     <!-- ================= LEFT PANEL ================= -->
     <div class="left-panel">
 
-        <h1>🍊 Nagpur AI</h1>
-
-        <label>Source</label>
-        <select id="source"></select>
-
-        <label>Destination</label>
-        <select id="destination"></select>
-
-        <label>Traffic Density</label>
-        <input type="range" id="density" min="0" max="100" value="50">
-        <div id="densityValue">50%</div>
-
-        <!-- EMERGENCY -->
-        <div class="emergency-box">
-            <span>🚑 Emergency Mode</span>
-            <input type="checkbox" id="emergency">
+        <!-- HEADER -->
+        <div class="panel-header">
+            <h1>🍊 Nagpur AI</h1>
+            <span class="status-dot"></span>
         </div>
 
+        <!-- SECTION: ROUTING -->
+        <div class="section">
+            <h3>Route Control</h3>
+
+            <div class="input-group">
+                <label>📍 Source</label>
+                <select id="source"></select>
+            </div>
+
+            <div class="input-group">
+                <label>🎯 Destination</label>
+                <select id="destination"></select>
+            </div>
+        </div>
+
+        <!-- SECTION: TRAFFIC -->
+        <div class="section">
+            <h3>Traffic Density</h3>
+
+            <input type="range" id="density" min="0" max="100" value="50">
+            <div id="densityValue">50%</div>
+        </div>
+
+        <!-- SECTION: EMERGENCY -->
+        <div class="emergency-card">
+            <div class="emergency-top">
+                <span>🚑 Emergency Override</span>
+                <input type="checkbox" id="emergency">
+            </div>
+
+            <p>
+                AI prioritizes fastest route, overrides signals, and reduces delay.
+            </p>
+        </div>
+
+        <!-- ACTION BUTTON -->
         <button id="analyzeBtn">⚡ Start AI Routing</button>
 
     </div>
 
-    <!-- ================= MAP ================= -->
-    <div id="map"></div>
+    <!-- ================= RIGHT SIDE ================= -->
+    <div class="main">
 
-</div>
+        <!-- MAP -->
+        <div id="map"></div>
 
-<!-- ================= BOTTOM AI PANEL ================= -->
-<div class="bottom-bar">
+        <!-- AI PANEL -->
+        <div class="bottom-bar">
 
-    <div class="metric">
-        <span>Traffic</span>
-        <h2 id="traffic">-</h2>
-    </div>
+            <div class="metrics-row">
 
-    <div class="metric">
-        <span>ETA</span>
-        <h2 id="eta">-</h2>
-    </div>
+                <div class="metric">
+                    <span>🚦 Traffic</span>
+                    <h2 id="traffic">-</h2>
+                </div>
 
-    <div class="metric">
-        <span>Mode</span>
-        <h2 id="mode">-</h2>
-    </div>
+                <div class="metric">
+                    <span>⏱ ETA</span>
+                    <h2 id="eta">-</h2>
+                </div>
 
-    <div class="metric">
-        <span>Confidence</span>
-        <div class="progress">
-            <div id="confidenceBar"></div>
+                <div class="metric">
+                    <span>⚙ Mode</span>
+                    <h2 id="mode">-</h2>
+                </div>
+
+                <div class="metric">
+                    <span>📊 Confidence</span>
+                    <div class="progress">
+                        <div id="confidenceBar"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- AI TEXT -->
+            <div class="ai-text" id="aiReason">
+                🧠 AI waiting for input...
+            </div>
+
         </div>
-    </div>
 
-    <div class="ai-text" id="aiReason">
-        🧠 AI waiting for input...
     </div>
 
 </div>
