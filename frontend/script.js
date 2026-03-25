@@ -72,8 +72,8 @@ function App() {
             const routeCoords = [sourceCoord, destCoord];
 
             L.polyline(routeCoords, {
-                color: formData.emergency ? 'red' : 'green',
-                weight: 5
+                color: formData.emergency ? '#ef4444' : '#10b981',
+                weight: 6
             }).addTo(map);
 
             map.fitBounds(routeCoords);
@@ -85,7 +85,6 @@ function App() {
         setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
-    // ✅ FIXED FUNCTION
     const analyzeTraffic = async () => {
         if (!formData.source || !formData.destination) return;
 
@@ -133,37 +132,79 @@ function App() {
         }
     }, [results]);
 
-    const statusClass = results ? `status-${results.trafficLevel.toLowerCase()}` : '';
     const isValid = formData.source && formData.destination;
 
     return (
         React.createElement('div', { className: 'container' },
-            React.createElement('h1', null, 'Smart Traffic Dashboard'),
 
-            React.createElement('select', { name: 'source', onChange: handleChange },
-                React.createElement('option', { value: '' }, 'Select Source'),
-                nagpurLocations.map(loc =>
-                    React.createElement('option', { key: loc, value: loc }, loc)
+            // HEADER
+            React.createElement('div', { className: 'header' },
+                React.createElement('h1', null, '🗺️ Nagpur Smart Traffic Dashboard'),
+                React.createElement('p', null, 'AI-powered Traffic Management System')
+            ),
+
+            // MAIN
+            React.createElement('div', { className: 'main-content' },
+
+                // LEFT PANEL
+                React.createElement('div', { className: 'panel' },
+                    React.createElement('h2', null, 'Control Panel'),
+
+                    React.createElement('select', {
+                        name: 'source',
+                        value: formData.source,
+                        onChange: handleChange
+                    },
+                        React.createElement('option', { value: '' }, 'Select Source'),
+                        nagpurLocations.map(loc =>
+                            React.createElement('option', { key: loc, value: loc }, loc)
+                        )
+                    ),
+
+                    React.createElement('select', {
+                        name: 'destination',
+                        value: formData.destination,
+                        onChange: handleChange
+                    },
+                        React.createElement('option', { value: '' }, 'Select Destination'),
+                        nagpurLocations.map(loc =>
+                            React.createElement('option', { key: loc, value: loc }, loc)
+                        )
+                    ),
+
+                    React.createElement('button', {
+                        onClick: analyzeTraffic,
+                        disabled: loading || !isValid,
+                        className: 'analyze-btn'
+                    }, loading ? "Analyzing..." : "Analyze Traffic")
+                ),
+
+                // RIGHT PANEL
+                React.createElement('div', { className: 'panel' },
+
+                    results ?
+                    React.createElement('div', null,
+
+                        React.createElement('div', {
+                            ref: mapRef,
+                            style: { height: '250px', marginBottom: '20px' }
+                        }),
+
+                        React.createElement('h3', null, `Traffic: ${results.trafficLevel}`),
+                        React.createElement('p', null, `Route: ${results.route}`),
+                        React.createElement('p', null, `ETA: ${results.eta}`),
+                        React.createElement('p', null, `Mode: ${results.mode}`),
+                        React.createElement('p', null, `Confidence: ${results.confidence}%`),
+                        React.createElement('p', null, `Insight: ${results.insight}`)
+
+                    ) :
+                    React.createElement('p', null, 'Run analysis to see results')
                 )
             ),
 
-            React.createElement('select', { name: 'destination', onChange: handleChange },
-                React.createElement('option', { value: '' }, 'Select Destination'),
-                nagpurLocations.map(loc =>
-                    React.createElement('option', { key: loc, value: loc }, loc)
-                )
-            ),
-
-            React.createElement('button', { onClick: analyzeTraffic }, 'Analyze'),
-
-            results && React.createElement('div', null,
-                React.createElement('h3', null, `Traffic: ${results.trafficLevel}`),
-                React.createElement('p', null, `Route: ${results.route}`),
-                React.createElement('p', null, `Mode: ${results.mode}`),
-                React.createElement('p', null, `Confidence: ${results.confidence}%`)
-            ),
-
-            React.createElement('div', { ref: mapRef, style: { height: '300px', marginTop: '20px' } })
+            React.createElement('div', { className: 'privacy-footer' },
+                '🔒 Privacy-first system | No user data stored'
+            )
         )
     );
 }
