@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Traffic AI</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="sidebar">
+        <h2>🚦 Control Panel</h2>
+
+        <label>Source</label>
+        <select id="source"></select>
+
+        <label>Destination</label>
+        <select id="destination"></select>
+
+        <label>
+            <input type="checkbox" id="emergency"> Emergency Mode
+        </label>
+
+        <button id="analyzeBtn">Analyze Traffic</button>
+    </div>
+
+    <div class="main">
+        <div id="map"></div>
+
+        <div id="results">
+            <h3>Results</h3>
+            <p>Run analysis to see results</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
