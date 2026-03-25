@@ -1,6 +1,7 @@
 const { useState, useEffect, useRef } = React;
 
 function App() {
+
     const [formData, setFormData] = useState({
         source: '',
         destination: '',
@@ -11,16 +12,17 @@ function App() {
 
     const [results, setResults] = useState(null);
     const [loading, setLoading] = useState(false);
+
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
 
-    const nagpurLocations = [
+    const locations = [
         'Sitabuldi', 'Wardha Road', 'Mihan', 'Manewada',
         'Kalamna', 'Dhantoli', 'Shankar Nagar', 'Civil Lines',
         'Gandhibagh', 'Itwari', 'Besa', 'Godhni'
     ];
 
-    const locationCoords = {
+    const coords = {
         'Sitabuldi': [21.1470, 79.0827],
         'Wardha Road': [21.1333, 79.0667],
         'Mihan': [21.1000, 79.0333],
@@ -44,7 +46,7 @@ function App() {
             .addTo(mapInstance.current);
     }
 
-    function updateMap() {
+    function clearMap() {
         const map = mapInstance.current;
         if (!map) return;
 
@@ -53,9 +55,16 @@ function App() {
                 map.removeLayer(layer);
             }
         });
+    }
 
-        const s = locationCoords[formData.source];
-        const d = locationCoords[formData.destination];
+    function updateMap() {
+        const map = mapInstance.current;
+        if (!map) return;
+
+        clearMap();
+
+        const s = coords[formData.source];
+        const d = coords[formData.destination];
 
         if (s) L.marker(s).addTo(map);
         if (d) L.marker(d).addTo(map);
@@ -73,27 +82,26 @@ function App() {
     }
 
     function handleChange(e) {
-        const { name, value, type, checked } = e.target;
+        const name = e.target.name;
+        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
 
         setFormData(function (prev) {
-            return {
-                ...prev,
-                [name]: type === 'checkbox' ? checked : value
-            };
+            return { ...prev, [name]: value };
         });
     }
 
     async function analyzeTraffic() {
-        if (!formData.source || !formData.destination) return;
+        if (!formData.source || !formData.destination) {
+            alert("Please select source and destination");
+            return;
+        }
 
         setLoading(true);
 
         try {
             const res = await fetch("http://localhost:5000/analyze", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     source: formData.source,
                     destination: formData.destination,
@@ -117,10 +125,11 @@ function App() {
             setTimeout(function () {
                 initMap();
                 updateMap();
-            }, 200);
+            }, 300);
 
         } catch (err) {
-            console.error("Error:", err);
+            console.error(err);
+            alert("Backend not responding");
         }
 
         setLoading(false);
@@ -128,7 +137,7 @@ function App() {
 
     useEffect(function () {
         if (results) {
-            setTimeout(initMap, 100);
+            setTimeout(initMap, 200);
         }
     }, [results]);
 
@@ -154,7 +163,7 @@ function App() {
                     onChange: handleChange
                 },
                     React.createElement('option', { value: '' }, 'Select Source'),
-                    nagpurLocations.map(function (loc) {
+                    locations.map(function (loc) {
                         return React.createElement('option', { key: loc, value: loc }, loc);
                     })
                 ),
@@ -166,7 +175,7 @@ function App() {
                     onChange: handleChange
                 },
                     React.createElement('option', { value: '' }, 'Select Destination'),
-                    nagpurLocations.map(function (loc) {
+                    locations.map(function (loc) {
                         return React.createElement('option', { key: loc, value: loc }, loc);
                     })
                 ),

@@ -23,18 +23,33 @@
 
 <body>
 
-    <!-- ROOT -->
-    <div id="root"></div>
 
-    <!-- React (Production = Stable on Safari) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<h1>🚦 Smart Traffic AI</h1>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<select id="source">
+  <option value="">Select Source</option>
+  <option>Sitabuldi</option>
+  <option>Wardha Road</option>
+  <option>Mihan</option>
+  <option>Manewada</option>
+</select>
 
-    <!-- YOUR SCRIPT (LOAD LAST ALWAYS) -->
-    <script src="script.js"></script>
+<select id="destination">
+  <option value="">Select Destination</option>
+  <option>Sitabuldi</option>
+  <option>Wardha Road</option>
+  <option>Mihan</option>
+  <option>Manewada</option>
+</select>
+
+<button id="analyzeBtn">Analyze</button>
+
+<div id="results"></div>
+
+<div id="map" style="height:300px;margin-top:20px;"></div>
+
+<script src="script.js"></script>
+
 
 </body>
 </html>
