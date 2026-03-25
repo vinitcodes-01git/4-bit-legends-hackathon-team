@@ -123,14 +123,8 @@
 <!-- Routing Machine -->
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
-<!-- FIX: Load script AFTER everything -->
-<script>
-window.onload = function() {
-    const script = document.createElement("script");
-    script.src = "script.js";
-    document.body.appendChild(script);
-};
-</script>
+<!-- YOUR MAIN SCRIPT (IMPORTANT: NO window.onload) -->
+<script src="script.js"></script>
 
 </body>
 </html>
