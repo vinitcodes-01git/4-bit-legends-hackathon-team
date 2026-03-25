@@ -14,8 +14,8 @@ body {
     height:100%;
     z-index:1;
 
-    /* clearer map */
-    filter: brightness(1.05) contrast(1.1);
+    /* ✅ FIXED: no washout */
+    filter: none;
 }
 
 /* ================= TOP BAR ================= */
@@ -157,6 +157,7 @@ button {
 }
 
 button:hover {
+    transform:translateY(-1px);
     box-shadow:0 6px 18px rgba(249,115,22,0.3);
 }
 
@@ -258,6 +259,7 @@ button:hover {
     height:4px;
     width:0%;
     background:#22c55e;
+    transition:width 0.4s ease;
 }
 
 /* ================= AI TEXT ================= */
