@@ -134,33 +134,34 @@ btn.onclick = async function(){
 
     try {
 
-        // ✅ FINAL FIX (IMPORTANT)
-        const res = await fetch("http://localhost:5000/analyze"),{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-                source:source.value,
-                destination:destination.value,
-                vehicles:density.value,
-                emergency:emergency.checked
+        // ✅ FIXED FETCH (MAIN BUG SOLVED)
+        const res = await fetch("http://127.0.0.1:5000/analyze", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                source: source.value,
+                destination: destination.value,
+                vehicles: density.value,
+                emergency: emergency.checked
             })
         });
-
-        console.log("Status:", res.status);
 
         if(!res.ok) throw new Error("Server not responding");
 
         const data = await res.json();
-        console.log("DATA:", data);
 
         const bestRoute = data.fastest_route || data.route;
         const altRoute = data.low_traffic_route || [...bestRoute].reverse();
 
+        // CLEAR OLD
         if(route1) map.removeControl(route1);
         if(route2) map.removeControl(route2);
         if(startMarker) map.removeLayer(startMarker);
         if(endMarker) map.removeLayer(endMarker);
 
+        // ROUTES
         route1 = L.Routing.control({
             waypoints: bestRoute.map(l=>L.latLng(...coords[l])),
             lineOptions:{styles:[{color:"#ef4444",weight:6}]},
@@ -175,6 +176,7 @@ btn.onclick = async function(){
             addWaypoints:false
         }).addTo(map);
 
+        // MARKERS
         const start = coords[bestRoute[0]];
         const end = coords[bestRoute.at(-1)];
 
@@ -185,6 +187,7 @@ btn.onclick = async function(){
             map.fitBounds(route1.getBounds(),{padding:[50,50]});
         },400);
 
+        // ================= UI =================
         trafficText.innerText = data.traffic;
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
