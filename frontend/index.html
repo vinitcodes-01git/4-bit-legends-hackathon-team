@@ -7,133 +7,81 @@
 <title>🍊 Nagpur Smart Traffic AI</title>
 
 <link rel="stylesheet" href="style.css">
-
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 </head>
 
 <body>
 
-<!-- ================= GLOBAL HEADER ================= -->
+<!-- TOP BAR -->
 <div class="topbar">
-    <div class="logo">🍊 Nagpur Smart Traffic AI</div>
+    <div class="logo">🍊 Nagpur AI</div>
     <div class="status">
         <span class="dot"></span>
-        AI System Active
+        Live AI System
     </div>
 </div>
 
+<!-- MAIN APP -->
 <div class="app">
 
-    <!-- ================= SIDEBAR ================= -->
-    <div class="sidebar">
+    <!-- LEFT CONTROL (SMALL NOW) -->
+    <div class="control">
 
-        <h1>Control Panel</h1>
+        <h2>Control</h2>
 
-        <!-- SOURCE -->
-        <div class="input-group">
-            <label>📍 Source</label>
-            <select id="source">
-                <option value="">Select Source</option>
-            </select>
+        <select id="source"></select>
+        <select id="destination"></select>
+
+        <input type="range" id="density" min="0" max="100" value="50">
+        <div id="densityValue">50%</div>
+
+        <div class="emergency-mini">
+            🚑 Emergency
+            <input type="checkbox" id="emergency">
         </div>
 
-        <!-- DESTINATION -->
-        <div class="input-group">
-            <label>🎯 Destination</label>
-            <select id="destination">
-                <option value="">Select Destination</option>
-            </select>
-        </div>
-
-        <!-- VEHICLE DENSITY -->
-        <div class="input-group">
-            <label>🚗 Traffic Density</label>
-            <input type="range" id="density" min="0" max="100" value="50">
-            <div id="densityValue">50%</div>
-        </div>
-
-        <!-- 🚑 EMERGENCY SYSTEM -->
-        <div class="emergency-box">
-
-            <div class="emergency-header">
-                🚑 Emergency Override
-            </div>
-
-            <label class="switch">
-                <input type="checkbox" id="emergency">
-                <span class="slider"></span>
-            </label>
-
-            <p class="emergency-note">
-                AI prioritizes fastest route & overrides signals
-            </p>
-
-        </div>
-
-        <!-- BUTTON -->
-        <button id="analyzeBtn">🚀 Activate AI Routing</button>
+        <button id="analyzeBtn">⚡ Start AI</button>
 
     </div>
 
-    <!-- ================= MAIN ================= -->
-    <div class="main">
+    <!-- MAP (MAIN HERO) -->
+    <div id="map"></div>
 
-        <!-- MAP -->
-        <div id="map"></div>
+    <!-- BOTTOM DASHBOARD -->
+    <div class="bottom-panel">
 
-        <!-- ================= DASHBOARD ================= -->
-        <div class="cards">
-
-            <div class="card">
-                <span>🚦 Traffic Level</span>
-                <h2 id="traffic">-</h2>
-            </div>
-
-            <div class="card">
-                <span>⏱ ETA</span>
-                <h2 id="eta">-</h2>
-            </div>
-
-            <div class="card">
-                <span>⚙ Mode</span>
-                <h2 id="mode">-</h2>
-            </div>
-
-            <div class="card">
-                <span>📊 Confidence</span>
-                <div class="progress">
-                    <div id="confidenceBar"></div>
-                </div>
-            </div>
-
+        <div class="metric">
+            <span>Traffic</span>
+            <h2 id="traffic">-</h2>
         </div>
 
-        <!-- ================= AI PANEL ================= -->
-        <div class="ai-panel">
+        <div class="metric">
+            <span>ETA</span>
+            <h2 id="eta">-</h2>
+        </div>
 
-            <h3>🧠 AI Decision Engine</h3>
+        <div class="metric">
+            <span>Mode</span>
+            <h2 id="mode">-</h2>
+        </div>
 
-            <p id="aiReason">
-                System idle... waiting for input
-            </p>
+        <div class="metric">
+            <span>Confidence</span>
+            <div class="progress">
+                <div id="confidenceBar"></div>
+            </div>
+        </div>
 
+        <div class="ai-box">
+            🧠 <span id="aiReason">AI waiting...</span>
         </div>
 
     </div>
 
 </div>
 
-<!-- ================= FOOTER ================= -->
-<div class="footer">
-    Smart City • Nagpur • AI Traffic Optimization System
-</div>
-
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- Script -->
 <script src="script.js"></script>
 
 </body>
