@@ -18,7 +18,7 @@ const suggestionText = document.getElementById("suggestionText");
 
 const btn = document.getElementById("analyzeBtn");
 
-// ================= ALL LOCATIONS (RESTORED) =================
+// ================= ALL LOCATIONS =================
 const locations = [
 "Sitabuldi","Wardha Road","Airport","Railway Station",
 "AIIMS Nagpur","Wockhardt Hospital","Seven Star Hospital",
@@ -69,7 +69,6 @@ density.oninput = () => {
 // ================= MAP =================
 let map = L.map("map",{zoomControl:false}).setView([21.1458,79.0882],13);
 
-// ✅ CLEAN + CLEAR MAP
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: '&copy; OpenStreetMap'
 }).addTo(map);
@@ -84,7 +83,6 @@ function signalIcon(color){
     });
 }
 
-// realistic signals
 [
 [21.147,79.082],[21.133,79.066],[21.140,79.080],
 [21.110,79.050],[21.150,79.090],[21.145,79.085],
@@ -136,8 +134,8 @@ btn.onclick = async function(){
 
     try {
 
-        // ✅ FIXED BACKEND URL
-        const res = await fetch("http://localhost:5000/analyze",{
+        // ✅ FINAL FIX (IMPORTANT)
+        const res = await fetch("http://127.0.0.1:5000/analyze",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
@@ -148,20 +146,21 @@ btn.onclick = async function(){
             })
         });
 
-        if(!res.ok) throw new Error("Server error");
+        console.log("Status:", res.status);
+
+        if(!res.ok) throw new Error("Server not responding");
 
         const data = await res.json();
+        console.log("DATA:", data);
 
         const bestRoute = data.fastest_route || data.route;
         const altRoute = data.low_traffic_route || [...bestRoute].reverse();
 
-        // CLEAR OLD
         if(route1) map.removeControl(route1);
         if(route2) map.removeControl(route2);
         if(startMarker) map.removeLayer(startMarker);
         if(endMarker) map.removeLayer(endMarker);
 
-        // 🔴 FASTEST ROUTE
         route1 = L.Routing.control({
             waypoints: bestRoute.map(l=>L.latLng(...coords[l])),
             lineOptions:{styles:[{color:"#ef4444",weight:6}]},
@@ -169,7 +168,6 @@ btn.onclick = async function(){
             addWaypoints:false
         }).addTo(map);
 
-        // 🟢 ALT ROUTE
         route2 = L.Routing.control({
             waypoints: altRoute.map(l=>L.latLng(...coords[l])),
             lineOptions:{styles:[{color:"#22c55e",weight:4,dashArray:"6,6"}]},
@@ -177,7 +175,6 @@ btn.onclick = async function(){
             addWaypoints:false
         }).addTo(map);
 
-        // MARKERS
         const start = coords[bestRoute[0]];
         const end = coords[bestRoute.at(-1)];
 
@@ -188,29 +185,21 @@ btn.onclick = async function(){
             map.fitBounds(route1.getBounds(),{padding:[50,50]});
         },400);
 
-        // ================= UI =================
         trafficText.innerText = data.traffic;
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
         confidenceBar.style.width = (data.confidence*100)+"%";
 
-        const prediction =
-            density.value>70?"High congestion expected":
-            density.value>40?"Moderate traffic expected":
-            "Smooth traffic expected";
-
-        predictionText.innerText = prediction;
+        predictionText.innerText = "Traffic analyzed";
 
         suggestionText.innerText =
-        "• Route optimized based on traffic\n" +
-        "• Alternate path available\n" +
-        (emergency.checked ? "• Emergency priority enabled" : "• Normal routing");
+        "• Route optimized\n• Alternative available";
 
         aiReason.innerText = data.reason;
 
     } catch(err){
-        console.error(err);
-        alert("Backend not connected ❌");
+        console.error("ERROR:", err);
+        alert("Backend connection failed ❌");
     }
 
     btn.innerText="Analyze Route";
