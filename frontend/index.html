@@ -13,31 +13,41 @@
 
 <body>
 
-<!-- MAP FULLSCREEN -->
-<div id="map"></div>
+<!-- ================= APP WRAPPER ================= -->
+<div class="app">
 
-<!-- 🔥 FLOATING AI PANEL -->
-<div class="ai-panel">
+    <!-- ================= LEFT PANEL ================= -->
+    <div class="left-panel">
 
-    <h1>🍊 Nagpur AI</h1>
+        <h1>🍊 Nagpur AI</h1>
 
-    <select id="source"></select>
-    <select id="destination"></select>
+        <label>Source</label>
+        <select id="source"></select>
 
-    <input type="range" id="density" min="0" max="100" value="50">
-    <div id="densityValue">50%</div>
+        <label>Destination</label>
+        <select id="destination"></select>
 
-    <div class="emergency-toggle">
-        🚑 Emergency Mode
-        <input type="checkbox" id="emergency">
+        <label>Traffic Density</label>
+        <input type="range" id="density" min="0" max="100" value="50">
+        <div id="densityValue">50%</div>
+
+        <!-- EMERGENCY -->
+        <div class="emergency-box">
+            <span>🚑 Emergency Mode</span>
+            <input type="checkbox" id="emergency">
+        </div>
+
+        <button id="analyzeBtn">⚡ Start AI Routing</button>
+
     </div>
 
-    <button id="analyzeBtn">⚡ Start AI Routing</button>
+    <!-- ================= MAP ================= -->
+    <div id="map"></div>
 
 </div>
 
-<!-- 🔥 AI RESULT BAR -->
-<div class="ai-bottom">
+<!-- ================= BOTTOM AI PANEL ================= -->
+<div class="bottom-bar">
 
     <div class="metric">
         <span>Traffic</span>
@@ -62,7 +72,7 @@
     </div>
 
     <div class="ai-text" id="aiReason">
-        AI waiting...
+        🧠 AI waiting for input...
     </div>
 
 </div>

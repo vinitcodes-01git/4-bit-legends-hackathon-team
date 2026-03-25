@@ -1,116 +1,163 @@
+/* ================= BASE ================= */
 body {
-    margin:0;
+    margin: 0;
     font-family: system-ui;
-    background:#000;
-    overflow:hidden;
+    background: #020617;
+    color: white;
+    overflow: hidden;
 }
 
-/* MAP FULLSCREEN */
-#map {
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
+/* ================= APP LAYOUT ================= */
+.app {
+    display: flex;
+    height: 100vh;
 }
 
-/* 🔥 FLOATING PANEL */
-.ai-panel {
-    position:absolute;
-    top:40px;
-    left:40px;
-    width:280px;
-    padding:20px;
-
-    background: rgba(0,0,0,0.6);
+/* ================= LEFT PANEL ================= */
+.left-panel {
+    width: 280px;
+    padding: 20px;
+    background: rgba(2,6,23,0.95);
     backdrop-filter: blur(20px);
-    border-radius:20px;
+    border-right: 1px solid rgba(255,255,255,0.05);
 
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-
-    border:1px solid rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 /* TITLE */
-.ai-panel h1 {
-    color:#fb923c;
-    font-size:20px;
+.left-panel h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fb923c;
+    margin-bottom: 10px;
 }
 
-/* INPUT */
-select,input {
-    padding:10px;
-    border-radius:10px;
-    border:none;
-    background:#111;
-    color:white;
+/* LABELS */
+.left-panel label {
+    font-size: 12px;
+    color: #94a3b8;
 }
 
-/* EMERGENCY */
-.emergency-toggle {
-    display:flex;
-    justify-content:space-between;
-    color:#ef4444;
-    font-size:13px;
+/* INPUTS */
+select, input[type="range"] {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #0f172a;
+    color: white;
+    outline: none;
+    transition: 0.2s;
 }
 
-/* BUTTON */
+select:hover {
+    box-shadow: 0 0 10px rgba(249,115,22,0.3);
+}
+
+/* SLIDER VALUE */
+#densityValue {
+    color: #fb923c;
+    font-weight: 600;
+}
+
+/* ================= EMERGENCY ================= */
+.emergency-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #ef4444;
+}
+
+/* ================= BUTTON ================= */
 button {
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(90deg,#f97316,#fb923c);
-    color:black;
-    font-weight:600;
-    cursor:pointer;
+    margin-top: 10px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg,#f97316,#fb923c);
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
 }
 
-/* 🔥 BOTTOM AI BAR */
-.ai-bottom {
-    position:absolute;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    width:90%;
-
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(20px);
-
-    border-radius:20px;
-    padding:20px;
-
-    display:flex;
-    align-items:center;
-    gap:30px;
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(249,115,22,0.4);
 }
 
-/* METRICS */
+/* ================= MAP ================= */
+#map {
+    flex: 1;
+    height: 100%;
+}
+
+/* ================= BOTTOM BAR ================= */
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 280px;
+    right: 0;
+    height: 110px;
+
+    background: rgba(2,6,23,0.85);
+    backdrop-filter: blur(15px);
+
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ================= METRICS ================= */
 .metric span {
-    font-size:12px;
-    color:#aaa;
+    font-size: 12px;
+    color: #94a3b8;
 }
+
 .metric h2 {
-    margin-top:4px;
-    color:white;
+    margin-top: 5px;
+    font-size: 20px;
 }
 
-/* PROGRESS */
+/* ================= PROGRESS ================= */
 .progress {
-    width:100px;
-    height:6px;
-    background:#111;
-}
-#confidenceBar {
-    height:6px;
-    background:#22c55e;
-    width:0%;
+    width: 120px;
+    height: 6px;
+    background: #0f172a;
+    border-radius: 6px;
 }
 
-/* AI TEXT */
+#confidenceBar {
+    height: 6px;
+    width: 0%;
+    background: linear-gradient(90deg,#22c55e,#4ade80);
+    border-radius: 6px;
+    transition: width 0.4s ease;
+}
+
+/* ================= AI TEXT ================= */
 .ai-text {
-    flex:1;
-    color:#38bdf8;
-    font-size:14px;
+    flex: 1;
+    color: #38bdf8;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width: 900px){
+    .left-panel {
+        width: 220px;
+    }
+
+    .bottom-bar {
+        left: 220px;
+    }
 }

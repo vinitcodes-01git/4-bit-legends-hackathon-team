@@ -1,5 +1,4 @@
 import math
-import random
 
 # ================= CITY GRAPH =================
 graph = {
@@ -19,7 +18,7 @@ graph = {
     "Hingna": ["Kalamna"]
 }
 
-# ================= COORDS =================
+# ================= COORDINATES =================
 coords = {
     "Sitabuldi":[21.147,79.082],
     "Wardha Road":[21.133,79.066],
@@ -37,106 +36,145 @@ coords = {
     "Hingna":[21.100,79.000]
 }
 
-# ================= COST FUNCTION =================
-def get_cost(a, b, density, emergency):
+# ================= DISTANCE =================
+def distance(a, b):
     ax, ay = coords[a]
     bx, by = coords[b]
+    return math.sqrt((ax-bx)**2 + (ay-by)**2)
 
-    distance = math.sqrt((ax-bx)**2 + (ay-by)**2)
+# ================= SMART COST =================
+def get_cost(a, b, density, emergency):
+    d = distance(a, b)
 
-    traffic_factor = 1 + (density / 100)
+    # congestion grows non-linearly
+    congestion = 1 + (density/100)**1.5
 
-    # simulate signal delay
-    signal_penalty = random.uniform(1, 1.5)
+    # intersections = more delay
+    connectivity_penalty = len(graph[b]) * 0.1
 
-    # emergency reduces delay
-    emergency_boost = 0.5 if emergency else 1
+    # time-based effect (simulate rush)
+    time_penalty = 1.2 if density > 60 else 1
 
-    return distance * traffic_factor * signal_penalty * emergency_boost
+    # emergency override
+    emergency_factor = 0.6 if emergency else 1
+
+    return d * congestion * time_penalty * (1 + connectivity_penalty) * emergency_factor
 
 
-# ================= DIJKSTRA =================
+# ================= DIJKSTRA (OPTIMIZED) =================
 def find_route(start, end, density, emergency):
-    distances = {node: float('inf') for node in graph}
-    prev = {}
-    visited = set()
+    unvisited = {node: float('inf') for node in graph}
+    previous = {}
 
-    distances[start] = 0
+    unvisited[start] = 0
 
-    while True:
-        current = None
+    while unvisited:
+        current = min(unvisited, key=unvisited.get)
 
-        for node in distances:
-            if node not in visited:
-                if current is None or distances[node] < distances[current]:
-                    current = node
-
-        if current is None or current == end:
+        if current == end:
             break
 
-        visited.add(current)
-
         for neighbor in graph[current]:
-            cost = distances[current] + get_cost(current, neighbor, density, emergency)
+            new_cost = unvisited[current] + get_cost(current, neighbor, density, emergency)
 
-            if cost < distances[neighbor]:
-                distances[neighbor] = cost
-                prev[neighbor] = current
+            if neighbor not in unvisited:
+                continue
+
+            if new_cost < unvisited[neighbor]:
+                unvisited[neighbor] = new_cost
+                previous[neighbor] = current
+
+        unvisited.pop(current)
 
     # reconstruct path
     path = []
-    curr = end
+    node = end
 
-    while curr in prev:
-        path.insert(0, curr)
-        curr = prev[curr]
+    while node in previous:
+        path.insert(0, node)
+        node = previous[node]
 
     path.insert(0, start)
 
-    return path, distances[end]
+    return path, len(path)
 
 
-# ================= MAIN AI =================
+# ================= TRAFFIC CLASSIFICATION =================
+def classify_traffic(density):
+    if density > 75:
+        return "High"
+    elif density > 40:
+        return "Medium"
+    return "Low"
+
+
+# ================= CONFIDENCE MODEL =================
+def calculate_confidence(density, path_length, emergency):
+    base = 0.85
+
+    density_penalty = (density / 200)
+    path_bonus = 1 / (path_length + 1)
+
+    emergency_boost = 0.05 if emergency else 0
+
+    confidence = base - density_penalty + path_bonus + emergency_boost
+
+    return round(max(0.7, min(confidence, 0.98)), 2)
+
+
+# ================= ETA MODEL =================
+def calculate_eta(path_length, density, emergency):
+    eta = path_length * 5 + (density / 2)
+
+    if emergency:
+        eta *= 0.65
+
+    return max(5, int(eta))
+
+
+# ================= AI REASON ENGINE =================
+def generate_reason(route, density, emergency, traffic):
+    reason = f"AI selected optimal path: {' → '.join(route)}. "
+
+    if traffic == "High":
+        reason += "Heavy congestion detected, rerouting to avoid critical nodes. "
+    elif traffic == "Medium":
+        reason += "Moderate traffic, balanced path selected. "
+    else:
+        reason += "Low congestion, fastest path chosen. "
+
+    if emergency:
+        reason += "Emergency override activated: signals minimized, priority routing applied. "
+
+    reason += "Decision based on distance, node connectivity, and dynamic congestion modeling."
+
+    return reason
+
+
+# ================= MAIN =================
 def analyze(data):
     source = data.get("source")
     destination = data.get("destination")
     density = int(data.get("vehicles", 50))
     emergency = data.get("emergency", False)
 
-    # find best route
-    route, cost = find_route(source, destination, density, emergency)
+    # route
+    route, path_length = find_route(source, destination, density, emergency)
 
-    # ================= TRAFFIC LEVEL =================
-    if density > 70:
-        traffic = "High"
-    elif density > 40:
-        traffic = "Medium"
-    else:
-        traffic = "Low"
+    # traffic
+    traffic = classify_traffic(density)
 
-    # ================= ETA =================
-    base_time = cost * 100
+    # eta
+    eta = calculate_eta(path_length, density, emergency)
 
-    if emergency:
-        base_time *= 0.7
+    # mode
+    mode = "Emergency Priority" if emergency else "AI Smart Routing"
 
-    eta = max(5, int(base_time))
+    # confidence
+    confidence = calculate_confidence(density, path_length, emergency)
 
-    # ================= MODE =================
-    mode = "Emergency Priority" if emergency else "Smart Optimized"
-
-    # ================= CONFIDENCE =================
-    confidence = round(random.uniform(0.75, 0.95), 2)
-
-    # ================= AI REASON =================
-    reason = f"AI evaluated multiple paths and selected optimal route via {' → '.join(route)}. "
-
-    reason += f"Traffic density ({density}%) influenced congestion scoring. "
-
-    if emergency:
-        reason += "Emergency priority reduced signal delays and optimized travel time. "
-
-    reason += "Signal delays, distance, and node connectivity were dynamically analyzed."
+    # reason
+    reason = generate_reason(route, density, emergency, traffic)
 
     return {
         "traffic": traffic,
