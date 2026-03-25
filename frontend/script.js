@@ -15,7 +15,7 @@ function App() {
     const mapInstance = useRef(null);
 
     const nagpurLocations = [
-        'Sitabuldi', 'Wardha Road', 'Mihan', 'Manewada', 
+        'Sitabuldi', 'Wardha Road', 'Mihan', 'Manewada',
         'Kalamna', 'Dhantoli', 'Shankar Nagar', 'Civil Lines',
         'Gandhibagh', 'Itwari', 'Besa', 'Godhni'
     ];
@@ -35,57 +35,55 @@ function App() {
         'Godhni': [21.1000, 79.0500]
     };
 
-    const initMap = () => {
+    function initMap() {
         if (mapInstance.current || !mapRef.current || typeof L === 'undefined') return;
 
         mapInstance.current = L.map(mapRef.current).setView([21.15, 79.08], 11);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(mapInstance.current);
-    };
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+            .addTo(mapInstance.current);
+    }
 
-    const updateMap = () => {
+    function updateMap() {
         const map = mapInstance.current;
-        if (!map || !formData.source || !formData.destination) return;
+        if (!map) return;
 
-        map.eachLayer(layer => {
+        map.eachLayer(function (layer) {
             if (layer instanceof L.Marker || layer instanceof L.Polyline) {
                 map.removeLayer(layer);
             }
         });
 
-        const sourceCoord = locationCoords[formData.source];
-        const destCoord = locationCoords[formData.destination];
+        const s = locationCoords[formData.source];
+        const d = locationCoords[formData.destination];
 
-        if (sourceCoord) {
-            L.marker(sourceCoord).addTo(map)
-                .bindPopup(`Start: ${formData.source}`);
-        }
+        if (s) L.marker(s).addTo(map);
+        if (d) L.marker(d).addTo(map);
 
-        if (destCoord) {
-            L.marker(destCoord).addTo(map)
-                .bindPopup(`End: ${formData.destination}`);
-        }
+        if (s && d) {
+            const route = [s, d];
 
-        if (sourceCoord && destCoord) {
-            const routeCoords = [sourceCoord, destCoord];
-
-            L.polyline(routeCoords, {
+            L.polyline(route, {
                 color: formData.emergency ? '#ef4444' : '#10b981',
                 weight: 6
             }).addTo(map);
 
-            map.fitBounds(routeCoords);
+            map.fitBounds(route);
         }
-    };
+    }
 
-    const handleChange = (e) => {
+    function handleChange(e) {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-    };
 
-    const analyzeTraffic = async () => {
+        setFormData(function (prev) {
+            return {
+                ...prev,
+                [name]: type === 'checkbox' ? checked : value
+            };
+        });
+    }
+
+    async function analyzeTraffic() {
         if (!formData.source || !formData.destination) return;
 
         setLoading(true);
@@ -108,25 +106,27 @@ function App() {
             const data = await res.json();
 
             setResults({
-                trafficLevel: data.traffic,
-                eta: `${data.signal_time} mins`,
-                route: data.route.join(" → "),
-                signalTiming: `${data.signal_time}s`,
-                mode: data.mode,
-                confidence: Math.floor(data.confidence * 100),
-                insight: data.reason
+                trafficLevel: data.traffic || "Medium",
+                eta: `${data.signal_time || 20} mins`,
+                route: (data.route || []).join(" → "),
+                mode: data.mode || "Normal",
+                confidence: Math.floor((data.confidence || 0.8) * 100),
+                insight: data.reason || "AI analysis complete"
             });
 
-            setTimeout(updateMap, 300);
+            setTimeout(function () {
+                initMap();
+                updateMap();
+            }, 200);
 
-        } catch (error) {
-            console.error("Error:", error);
+        } catch (err) {
+            console.error("Error:", err);
         }
 
         setLoading(false);
-    };
+    }
 
-    useEffect(() => {
+    useEffect(function () {
         if (results) {
             setTimeout(initMap, 100);
         }
@@ -134,19 +134,15 @@ function App() {
 
     const isValid = formData.source && formData.destination;
 
-    return (
-    React.createElement('div', { className: 'container' },
+    return React.createElement('div', { className: 'container' },
 
-        // HEADER
         React.createElement('div', { className: 'header' },
             React.createElement('h1', null, '🗺️ Smart Traffic AI'),
             React.createElement('p', null, 'Nagpur Intelligent Traffic Optimization System')
         ),
 
-        // MAIN GRID
         React.createElement('div', { className: 'main-content' },
 
-            // LEFT PANEL
             React.createElement('div', { className: 'panel' },
 
                 React.createElement('h2', null, '🚦 Input'),
@@ -158,9 +154,9 @@ function App() {
                     onChange: handleChange
                 },
                     React.createElement('option', { value: '' }, 'Select Source'),
-                    nagpurLocations.map(loc =>
-                        React.createElement('option', { key: loc, value: loc }, loc)
-                    )
+                    nagpurLocations.map(function (loc) {
+                        return React.createElement('option', { key: loc, value: loc }, loc);
+                    })
                 ),
 
                 React.createElement('label', null, 'Destination'),
@@ -170,9 +166,9 @@ function App() {
                     onChange: handleChange
                 },
                     React.createElement('option', { value: '' }, 'Select Destination'),
-                    nagpurLocations.map(loc =>
-                        React.createElement('option', { key: loc, value: loc }, loc)
-                    )
+                    nagpurLocations.map(function (loc) {
+                        return React.createElement('option', { key: loc, value: loc }, loc);
+                    })
                 ),
 
                 React.createElement('button', {
@@ -182,64 +178,39 @@ function App() {
                 }, loading ? "Analyzing..." : "🚀 Analyze Traffic")
             ),
 
-            // RIGHT PANEL
             React.createElement('div', { className: 'panel' },
 
                 results ?
-                React.createElement('div', null,
+                    React.createElement('div', null,
 
-                    // MAP
-                    React.createElement('div', {
-                        ref: mapRef,
-                        className: 'map-container'
-                    }),
+                        React.createElement('div', {
+                            ref: mapRef,
+                            className: 'map-container',
+                            style: { height: '250px', marginBottom: '20px' }
+                        }),
 
-                    // RESULTS GRID
-                    React.createElement('div', { className: 'results-grid' },
-
-                        React.createElement('div', { className: 'result-card' },
-                            React.createElement('h3', null, 'Traffic'),
-                            React.createElement('div', { className: 'result-value' }, results.trafficLevel)
-                        ),
-
-                        React.createElement('div', { className: 'result-card' },
-                            React.createElement('h3', null, 'ETA'),
-                            React.createElement('div', { className: 'result-value' }, results.eta)
-                        ),
-
-                        React.createElement('div', { className: 'result-card' },
-                            React.createElement('h3', null, 'Mode'),
-                            React.createElement('div', { className: 'result-value' }, results.mode)
-                        ),
-
-                        React.createElement('div', { className: 'result-card' },
-                            React.createElement('h3', null, 'Confidence'),
-                            React.createElement('div', { className: 'result-value' }, `${results.confidence}%`)
-                        )
-                    ),
-
-                    // ROUTE + INSIGHT
-                    React.createElement('div', { className: 'ai-insight' },
+                        React.createElement('p', null, `Traffic: ${results.trafficLevel}`),
+                        React.createElement('p', null, `ETA: ${results.eta}`),
                         React.createElement('p', null, `Route: ${results.route}`),
+                        React.createElement('p', null, `Mode: ${results.mode}`),
+                        React.createElement('p', null, `Confidence: ${results.confidence}%`),
                         React.createElement('p', null, `Insight: ${results.insight}`)
                     )
-
-                ) :
-                React.createElement('div', {
-                    style: { textAlign: 'center', padding: '80px', color: '#888' }
-                },
-                    React.createElement('h3', null, '🚦 Ready'),
-                    React.createElement('p', null, 'Select route and analyze')
-                )
+                    :
+                    React.createElement('div', {
+                        style: { textAlign: 'center', padding: '80px', color: '#888' }
+                    },
+                        React.createElement('h3', null, '🚦 Ready'),
+                        React.createElement('p', null, 'Select route and analyze')
+                    )
             )
         ),
 
         React.createElement('div', { className: 'privacy-footer' },
             '🔒 Privacy-first | No data stored'
         )
-    )
-);
+    );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root'))
+    .render(React.createElement(App));
