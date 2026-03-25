@@ -10,6 +10,7 @@ const trafficText = document.getElementById("traffic");
 const etaText = document.getElementById("eta");
 const modeText = document.getElementById("mode");
 const confidenceBar = document.getElementById("confidenceBar");
+const aiReason = document.getElementById("aiReason");
 
 const btn = document.getElementById("analyzeBtn");
 
@@ -89,7 +90,7 @@ signals.forEach((s,i)=>{
         color:color,
         fillOpacity:1
     }).addTo(map)
-    .bindPopup(`🚦 Signal (${color})`);
+    .bindPopup(`🚦 Signal (${color.toUpperCase()})`);
 });
 
 // ================= HOSPITAL MARKERS =================
@@ -106,6 +107,7 @@ Object.keys(coords).forEach(loc => {
 // ================= ROUTE =================
 let route;
 let animationInterval;
+let trafficDots = [];
 
 // Color logic
 function getTrafficColor(level){
@@ -113,6 +115,21 @@ function getTrafficColor(level){
     if(level==="High") return "#ef4444";
     if(level==="Medium") return "#f59e0b";
     return "#22c55e";
+}
+
+// 🚗 Traffic simulation dots
+function animateTraffic(path){
+    trafficDots.forEach(dot => map.removeLayer(dot));
+    trafficDots = [];
+
+    path.forEach(coord => {
+        const dot = L.circleMarker(coord,{
+            radius:4,
+            color:"#38bdf8"
+        }).addTo(map);
+
+        trafficDots.push(dot);
+    });
 }
 
 // ================= ANALYZE =================
@@ -151,44 +168,65 @@ btn.onclick = async function(){
         if(route) map.removeLayer(route);
         if(animationInterval) clearInterval(animationInterval);
 
+        const path = [coords[source.value], coords[destination.value]];
+
         // Draw route
-        route = L.polyline(
-            [coords[source.value], coords[destination.value]],
-            {
-                color: getTrafficColor(data.traffic),
-                weight: emergency.checked ? 9 : 6,
-                dashArray: emergency.checked ? "10,10" : null
-            }
-        ).addTo(map);
+        route = L.polyline(path,{
+            color: getTrafficColor(data.traffic),
+            weight: emergency.checked ? 9 : 6,
+            dashArray: emergency.checked ? "10,10" : null
+        }).addTo(map);
 
         map.flyToBounds(route.getBounds(), {duration:1.2});
 
-        // 🚀 EMERGENCY ANIMATION (WOW)
+        // 🚨 Emergency blinking
         if(emergency.checked){
             let visible = true;
             animationInterval = setInterval(()=>{
-                route.setStyle({
-                    opacity: visible ? 0.3 : 1
-                });
+                route.setStyle({opacity: visible ? 0.3 : 1});
                 visible = !visible;
             },500);
         }
 
-        // ================= UI UPDATE =================
+        // 🚗 Traffic animation
+        animateTraffic(path);
+
+        // ================= UI =================
         trafficText.innerText = data.traffic;
         etaText.innerText = data.signal_time + " min";
         modeText.innerText = data.mode;
 
         confidenceBar.style.width = (data.confidence * 100) + "%";
 
-        // Traffic color
+        // Color
+        trafficText.style.color =
+            data.traffic === "High" ? "#ef4444" :
+            data.traffic === "Medium" ? "#f59e0b" : "#22c55e";
+
+        // ================= AI REASON =================
+        let reason = "";
+
         if(data.traffic === "High"){
-            trafficText.style.color = "#ef4444";
+            reason += "Heavy congestion detected. ";
         } else if(data.traffic === "Medium"){
-            trafficText.style.color = "#f59e0b";
+            reason += "Moderate traffic conditions. ";
         } else {
-            trafficText.style.color = "#22c55e";
+            reason += "Smooth traffic flow. ";
         }
+
+        if(density.value > 70){
+            reason += "High vehicle density increasing delay. ";
+        } else if(density.value < 30){
+            reason += "Low density allows faster movement. ";
+        }
+
+        if(emergency.checked){
+            reason += "🚑 Emergency mode activated: prioritizing fastest route. ";
+        }
+
+        reason += "AI optimized route using shortest time logic.";
+
+        aiReason.innerText = reason;
 
     } catch(err){
         console.error(err);
